@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+
+# Environment and secrets
+.env
+appsettings.Development.json
+
+# Operating system files
+.DS_Store
+Thumbs.db

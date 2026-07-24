@@ -1,0 +1,82 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="hero-section text-center">
+    <h1 class="display-4">Welcome to BookBoard</h1>
+    <p class="tagline">Your cozy corner for discovering, saving, and organizing books by mood, vibe, and taste.</p>
+
+    <div class="hero-buttons">
+        <a class="btn btn-primary" href="#">Start Exploring</a>
+        <a class="btn btn-outline-secondary" href="#">Create a Board</a>
+    </div>
+</div>
+
+<div class="features-preview">
+    <div class="feature-card">
+        <h3>Create aesthetic boards</h3>
+        <p>Organize your reads into cozy, dreamy, dark academia, summer, or comfort-book collections.</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>Discover by vibe</h3>
+        <p>Find books that match your mood, favorite themes, and reading energy.</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>Save your next read</h3>
+        <p>Build your perfect TBR and keep all your favorite finds in one beautiful place.</p>
+    </div>
+</div>
+
+<div class="books-showcase">
+    <div class="section-heading text-center">
+        <h2>Browse by mood</h2>
+        <p>Find your next read through cozy vibes, soft aesthetics, and reader moods.</p>
+    </div>
+
+    <div class="mood-tags">
+        <span class="mood-tag">Cozy</span>
+        <span class="mood-tag">Dark Academia</span>
+        <span class="mood-tag">Soft Romance</span>
+        <span class="mood-tag">Fantasy Escape</span>
+        <span class="mood-tag">Summer Reads</span>
+        <span class="mood-tag">Comfort Books</span>
+    </div>
+
+    <div class="book-grid">
+        <div class="book-card">
+            <div class="book-cover cover-one"></div>
+            <div class="book-info">
+                <h4>The Midnight Library</h4>
+                <p>Reflective • Emotional • Comforting</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover cover-two"></div>
+            <div class="book-info">
+                <h4>Anne of Green Gables</h4>
+                <p>Warm • Cozy • Classic</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover cover-three"></div>
+            <div class="book-info">
+                <h4>Six of Crows</h4>
+                <p>Dark • Clever • Fast-Paced</p>
+            </div>
+        </div>
+
+        <div class="book-card">
+            <div class="book-cover cover-four"></div>
+            <div class="book-info">
+                <h4>Beach Read</h4>
+                <p>Light • Romantic • Summer</p>
+            </div>
+        </div>
+    </div>
+</div>

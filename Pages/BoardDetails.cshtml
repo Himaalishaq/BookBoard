@@ -1,0 +1,339 @@
+@page "{id:int}"
+@model BookBoard.Pages.BoardDetailsModel
+@{
+    ViewData["Title"] = Model.Board?.Title ?? "Board Details";
+}
+
+@if (Model.Board != null)
+{
+    <div class="board-details-page">
+
+        <div class="board-details-header">
+            <div>
+                <h1>@Model.Board.Title</h1>
+                <p>@Model.Board.Description</p>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Board.MoodTags))
+                {
+                    <div class="small-tag-row">
+                        @foreach (var tag in Model.Board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <span class="small-tag">@tag</span>
+                        }
+                    </div>
+                }
+            </div>
+
+            @if (Model.IsOwner)
+            {
+                <div class="board-header-actions">
+                    <a asp-page="/EditBoard" asp-route-id="@Model.Board.Id" class="btn btn-outline-secondary">
+                        Edit Board
+                    </a>
+
+                    <a asp-page="/DeleteBoard" asp-route-id="@Model.Board.Id" class="btn btn-danger-soft">
+                        Delete Board
+                    </a>
+
+                    <a asp-page="/AddBook" asp-route-boardId="@Model.Board.Id" class="btn btn-primary">
+                        Add Book
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="board-insight-grid">
+            <div class="insight-card board-dna-card">
+                <h2>Board DNA</h2>
+                <p class="insight-subtitle">
+                    The emotional makeup of this board based on its mood tags.
+                </p>
+
+                @if (Model.BoardDna.Count == 0)
+                {
+                    <p class="empty-small">
+                        Add mood tags to your board or books to generate Board DNA.
+                    </p>
+                }
+                else
+                {
+                    <div class="dna-list">
+                        @foreach (var mood in Model.BoardDna)
+                        {
+                            <div class="dna-item">
+                                <div class="dna-top-row">
+                                    <span>@mood.Mood</span>
+                                    <strong>@mood.Percentage%</strong>
+                                </div>
+
+                                <div class="dna-bar">
+                                    <div class="dna-fill" style="width: @mood.Percentage%;"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="insight-card">
+                <h2>Top Moods</h2>
+                <p class="insight-subtitle">
+                    The strongest vibes shaping this collection.
+                </p>
+
+                @if (Model.BoardDna.Count == 0)
+                {
+                    <p class="empty-small">No top moods yet.</p>
+                }
+                else
+                {
+                    <div class="top-mood-cloud">
+                        @foreach (var mood in Model.BoardDna.Take(5))
+                        {
+                            <span class="top-mood-pill">@mood.Mood</span>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="insight-card">
+                <h2>Board Stats</h2>
+                <p class="insight-subtitle">
+                    A quick snapshot of this board.
+                </p>
+
+                <div class="mini-stat-row">
+                    <div class="mini-stat">
+                        <strong>@Model.Board.Books.Count</strong>
+                        <span>Books</span>
+                    </div>
+
+                    <div class="mini-stat">
+                        <strong>@Model.BoardDna.Count</strong>
+                        <span>Moods</span>
+                    </div>
+
+                    <div class="mini-stat">
+                        @if (Model.Board.IsPublic)
+                        {
+                            <strong>Public</strong>
+                        }
+                        else
+                        {
+                            <strong>Private</strong>
+                        }
+
+                        <span>Visibility</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-heading text-center">
+            <h2>Books in this board</h2>
+            <p>Save books that match this mood, aesthetic, or reading moment.</p>
+        </div>
+
+        @if (Model.Board.Books.Count == 0)
+        {
+            <div class="empty-state">
+                <h3>No books yet</h3>
+                <p>Add your first book to start shaping this board’s vibe.</p>
+
+                @if (Model.IsOwner)
+                {
+                    <a asp-page="/AddBook" asp-route-boardId="@Model.Board.Id" class="btn btn-outline-secondary">
+                        Add First Book
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="book-grid">
+                @foreach (var book in Model.Board.Books.OrderByDescending(b => b.CreatedAt))
+                {
+                    <div class="book-card">
+                        @if (!string.IsNullOrWhiteSpace(book.CoverUrl))
+                        {
+                            <img src="@book.CoverUrl" alt="@book.Title cover" class="real-book-cover" />
+                        }
+                        else
+                        {
+                            <div class="book-cover cover-one"></div>
+                        }
+
+                        <div class="book-info">
+                            <h4>@book.Title</h4>
+
+                            @if (!string.IsNullOrWhiteSpace(book.Author))
+                            {
+                                <p>@book.Author</p>
+                            }
+
+                            @if (book.PublishedYear.HasValue)
+                            {
+                                <p class="published-year">Published: @book.PublishedYear</p>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(book.ShortDescription))
+                            {
+                                <p class="book-description">@book.ShortDescription</p>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(book.MoodTags))
+                            {
+                                <div class="small-tag-row">
+                                    @foreach (var tag in book.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        <span class="small-tag">@tag</span>
+                                    }
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(book.Reflection))
+                            {
+                                <div class="book-reflection">
+                                    “@book.Reflection”
+                                </div>
+                            }
+
+                            @if (Model.IsOwner)
+                            {
+                                <div class="card-actions">
+                                    <a asp-page="/EditBook" asp-route-id="@book.Id" class="btn btn-outline-secondary btn-sm">
+                                        Edit
+                                    </a>
+
+                                    <a asp-page="/DeleteBook" asp-route-id="@book.Id" class="btn btn-danger-soft btn-sm">
+                                        Delete
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="reflection-wall-section">
+            <div class="section-heading text-center">
+                <h2>Reflection Wall</h2>
+                <p>Thoughts, feelings, and personal notes connected to this board.</p>
+            </div>
+
+            @{
+                var reflectedBooks = Model.Board.Books
+                    .Where(book => !string.IsNullOrWhiteSpace(book.Reflection))
+                    .OrderByDescending(book => book.CreatedAt)
+                    .ToList();
+            }
+
+            @if (reflectedBooks.Count == 0)
+            {
+                <div class="empty-state">
+                    <h3>No reflections yet</h3>
+                    <p>Add reflections to your books to make this board feel more personal.</p>
+                </div>
+            }
+            else
+            {
+                <div class="reflection-grid">
+                    @foreach (var book in reflectedBooks)
+                    {
+                        <div class="reflection-card">
+                            <p>“@book.Reflection”</p>
+                            <span>@book.Title</span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="recommendations-section">
+            <div class="section-heading text-center">
+                <h2>Recommended for this board</h2>
+                <p>Books from other public boards that share a similar mood, feeling, or aesthetic.</p>
+            </div>
+
+            @if (Model.Recommendations.Count == 0)
+            {
+                <div class="empty-state">
+                    <h3>No recommendations yet</h3>
+                    <p>
+                        Add more books and mood tags, or create another public board with similar tags to generate recommendations.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="book-grid">
+                    @foreach (var recommendation in Model.Recommendations)
+                    {
+                        <div class="book-card">
+                            @if (!string.IsNullOrWhiteSpace(recommendation.Book.CoverUrl))
+                            {
+                                <img src="@recommendation.Book.CoverUrl" alt="@recommendation.Book.Title cover" class="real-book-cover" />
+                            }
+                            else
+                            {
+                                <div class="book-cover cover-three"></div>
+                            }
+
+                            <div class="book-info">
+                                <h4>@recommendation.Book.Title</h4>
+
+                                @if (!string.IsNullOrWhiteSpace(recommendation.Book.Author))
+                                {
+                                    <p>@recommendation.Book.Author</p>
+                                }
+
+                                @if (recommendation.Book.PublishedYear.HasValue)
+                                {
+                                    <p class="published-year">Published: @recommendation.Book.PublishedYear</p>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(recommendation.Book.ShortDescription))
+                                {
+                                    <p class="book-description">@recommendation.Book.ShortDescription</p>
+                                }
+
+                                <div class="match-score">
+                                    @recommendation.Score vibe match(es)
+                                </div>
+
+                                @if (recommendation.MatchedTags.Count > 0)
+                                {
+                                    <div class="small-tag-row">
+                                        @foreach (var tag in recommendation.MatchedTags)
+                                        {
+                                            <span class="small-tag">@tag</span>
+                                        }
+                                    </div>
+                                }
+
+                                @if (recommendation.Book.Board != null)
+                                {
+                                    <p class="book-location">
+                                        From
+                                        <a asp-page="/BoardDetails" asp-route-id="@recommendation.Book.Board.Id">
+                                            @recommendation.Book.Board.Title
+                                        </a>
+                                    </p>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(recommendation.Book.Reflection))
+                                {
+                                    <div class="book-reflection">
+                                        “@recommendation.Book.Reflection”
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+    </div>
+}

@@ -1,0 +1,409 @@
+@page
+@model BookBoard.Pages.DiscoverModel
+@{
+    ViewData["Title"] = "Discover";
+}
+
+<div class="discover-page">
+    <div class="section-heading text-center">
+        <h1>Discover Public Boards</h1>
+        <p>Explore reader-made boards by mood, aesthetic, and emotional reading vibe.</p>
+    </div>
+
+    <form method="get" class="discover-search">
+        <input 
+            type="text" 
+            name="query" 
+            value="@Model.SearchQuery" 
+            placeholder="Try: rainy day, religious awakening, dark academia, healing..." />
+
+        <button type="submit">Search</button>
+    </form>
+
+    <div class="discover-block">
+        <h3>Popular mood boards</h3>
+
+        @if (Model.PopularMoods.Count == 0)
+        {
+            <p class="empty-small">No public moods yet. Create public boards with mood tags to fill this section.</p>
+        }
+        else
+        {
+            <div class="mood-discovery-grid">
+                @foreach (var mood in Model.PopularMoods)
+                {
+                    <a asp-page="/Discover" asp-route-mood="@mood.Mood" class="mood-discovery-card">
+                        <span>@mood.Mood</span>
+                        <small>@mood.Count board/book tag(s)</small>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="discover-block">
+        <h3>Find boards similar to yours</h3>
+        <p class="discover-helper-text">
+            Choose one of your boards and BookBoard will find public boards with overlapping vibes.
+        </p>
+
+        <form method="get" class="similar-form">
+            <select name="similarToBoardId">
+                <option value="">Choose a board...</option>
+
+                @foreach (var option in Model.BoardOptions)
+                {
+                    if (Model.SimilarToBoardId == option.Id)
+                    {
+                        <option value="@option.Id" selected>@option.Title</option>
+                    }
+                    else
+                    {
+                        <option value="@option.Id">@option.Title</option>
+                    }
+                }
+            </select>
+
+            <button type="submit">Find Similar Boards</button>
+        </form>
+
+        @if (Model.SimilarToBoardId.HasValue)
+        {
+            <div class="similar-results">
+                <h4>Similar to “@Model.SimilarBoardTitle”</h4>
+
+                @if (Model.SimilarBoards.Count == 0)
+                {
+                    <p class="empty-small">No similar public boards found yet. Add more tags to your boards to improve matching.</p>
+                }
+                else
+                {
+                    <div class="boards-grid">
+                        @foreach (var match in Model.SimilarBoards)
+                        {
+                            <a asp-page="/BoardDetails" asp-route-id="@match.Board.Id" class="board-card board-link-card">
+                                <div class="board-preview preview-two"></div>
+
+                                <div class="board-content">
+                                    <div class="board-top-row">
+                                        <h3>@match.Board.Title</h3>
+                                        <span class="visibility-badge">Public</span>
+                                    </div>
+
+                                    <p>@match.Board.Description</p>
+
+                                    <div class="match-score">
+                                        @match.Score shared vibe(s)
+                                    </div>
+
+                                    @if (match.MatchedTags.Count > 0)
+                                    {
+                                        <div class="small-tag-row">
+                                            @foreach (var tag in match.MatchedTags)
+                                            {
+                                                <span class="small-tag">@tag</span>
+                                            }
+                                        </div>
+                                    }
+
+                                    <p class="book-count">@match.Board.Books.Count book(s)</p>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    @if (Model.HasSearched)
+    {
+        <div class="discover-block">
+            <h3>Search results for “@Model.SearchQuery”</h3>
+
+            <div class="section-subheading">
+                <h4>Matching Boards</h4>
+            </div>
+
+            @if (Model.MatchingBoards.Count == 0)
+            {
+                <p class="empty-small">No matching public boards found.</p>
+            }
+            else
+            {
+                <div class="boards-grid">
+                    @foreach (var board in Model.MatchingBoards)
+                    {
+                        <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
+                            <div class="board-preview preview-one"></div>
+
+                            <div class="board-content">
+                                <div class="board-top-row">
+                                    <h3>@board.Title</h3>
+                                    <span class="visibility-badge">Public</span>
+                                </div>
+
+                                <p>@board.Description</p>
+
+                                @if (!string.IsNullOrWhiteSpace(board.MoodTags))
+                                {
+                                    <div class="small-tag-row">
+                                        @foreach (var tag in board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <span class="small-tag">@tag</span>
+                                        }
+                                    </div>
+                                }
+
+                                <p class="book-count">@board.Books.Count book(s)</p>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+
+            <div class="section-subheading">
+                <h4>Matching Books</h4>
+            </div>
+
+            @if (Model.MatchingBooks.Count == 0)
+            {
+                <p class="empty-small">No matching public books found.</p>
+            }
+            else
+            {
+                <div class="book-grid">
+                    @foreach (var book in Model.MatchingBooks)
+                    {
+                        <div class="book-card">
+                            @if (!string.IsNullOrWhiteSpace(book.CoverUrl))
+                            {
+                                <img src="@book.CoverUrl" alt="@book.Title cover" class="real-book-cover" />
+                            }
+                            else
+                            {
+                                <div class="book-cover cover-two"></div>
+                            }
+
+                            <div class="book-info">
+                                <h4>@book.Title</h4>
+
+                                @if (!string.IsNullOrWhiteSpace(book.Author))
+                                {
+                                    <p>@book.Author</p>
+                                }
+
+                                @if (book.Board != null)
+                                {
+                                    <p class="book-location">
+                                        From
+                                        <a asp-page="/BoardDetails" asp-route-id="@book.Board.Id">
+                                            @book.Board.Title
+                                        </a>
+                                    </p>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(book.MoodTags))
+                                {
+                                    <div class="small-tag-row">
+                                        @foreach (var tag in book.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <span class="small-tag">@tag</span>
+                                        }
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(book.Reflection))
+                                {
+                                    <div class="book-reflection">
+                                        “@book.Reflection”
+                                    </div>
+                                }
+                                <div class="card-actions">
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <a asp-page="/SaveBook" asp-route-bookId="@book.Id" class="btn btn-primary btn-sm">
+                                            Save to Board
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-area="Identity"
+                                        asp-page="/Account/Login"
+                                        asp-route-returnUrl="@($"/SaveBook/{book.Id}")"
+                                        class="btn btn-primary btn-sm">
+                                            Login to Save
+                                        </a>
+                                    }
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.HasSelectedMood)
+    {
+        <div class="discover-block">
+            <h3>Boards for “@Model.SelectedMood”</h3>
+
+            @if (Model.MoodBoards.Count == 0)
+            {
+                <p class="empty-small">No public boards found for this mood yet.</p>
+            }
+            else
+            {
+                <div class="boards-grid">
+                    @foreach (var board in Model.MoodBoards)
+                    {
+                        <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
+                            <div class="board-preview preview-three"></div>
+
+                            <div class="board-content">
+                                <div class="board-top-row">
+                                    <h3>@board.Title</h3>
+                                    <span class="visibility-badge">Public</span>
+                                </div>
+
+                                <p>@board.Description</p>
+
+                                @if (!string.IsNullOrWhiteSpace(board.MoodTags))
+                                {
+                                    <div class="small-tag-row">
+                                        @foreach (var tag in board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                                        {
+                                            <span class="small-tag">@tag</span>
+                                        }
+                                    </div>
+                                }
+
+                                <p class="book-count">@board.Books.Count book(s)</p>
+                            </div>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    <div class="discover-block">
+        <h3>Recent public boards</h3>
+
+        @if (Model.RecentPublicBoards.Count == 0)
+        {
+            <p class="empty-small">No public boards yet.</p>
+        }
+        else
+        {
+            <div class="boards-grid">
+                @foreach (var board in Model.RecentPublicBoards)
+                {
+                    <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
+                        <div class="board-preview preview-one"></div>
+
+                        <div class="board-content">
+                            <div class="board-top-row">
+                                <h3>@board.Title</h3>
+                                <span class="visibility-badge">Public</span>
+                            </div>
+
+                            <p>@board.Description</p>
+
+                            @if (!string.IsNullOrWhiteSpace(board.MoodTags))
+                            {
+                                <div class="small-tag-row">
+                                    @foreach (var tag in board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        <span class="small-tag">@tag</span>
+                                    }
+                                </div>
+                            }
+
+                            <p class="book-count">@board.Books.Count book(s)</p>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="discover-block">
+        <h3>Cozy boards</h3>
+
+        @if (Model.CozyBoards.Count == 0)
+        {
+            <p class="empty-small">No cozy boards yet.</p>
+        }
+        else
+        {
+            <div class="boards-grid">
+                @foreach (var board in Model.CozyBoards)
+                {
+                    <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
+                        <div class="board-preview preview-one"></div>
+                        <div class="board-content">
+                            <h3>@board.Title</h3>
+                            <p>@board.Description</p>
+                            <p class="book-count">@board.Books.Count book(s)</p>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="discover-block">
+        <h3>Spiritual / religious awakening boards</h3>
+
+        @if (Model.SpiritualBoards.Count == 0)
+        {
+            <p class="empty-small">No spiritual boards yet.</p>
+        }
+        else
+        {
+            <div class="boards-grid">
+                @foreach (var board in Model.SpiritualBoards)
+                {
+                    <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
+                        <div class="board-preview preview-two"></div>
+                        <div class="board-content">
+                            <h3>@board.Title</h3>
+                            <p>@board.Description</p>
+                            <p class="book-count">@board.Books.Count book(s)</p>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="discover-block">
+        <h3>Dark academia boards</h3>
+
+        @if (Model.DarkAcademiaBoards.Count == 0)
+        {
+            <p class="empty-small">No dark academia boards yet.</p>
+        }
+        else
+        {
+            <div class="boards-grid">
+                @foreach (var board in Model.DarkAcademiaBoards)
+                {
+                    <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
+                        <div class="board-preview preview-three"></div>
+                        <div class="board-content">
+                            <h3>@board.Title</h3>
+                            <p>@board.Description</p>
+                            <p class="book-count">@board.Books.Count book(s)</p>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</div>

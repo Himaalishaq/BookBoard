@@ -1,0 +1,28 @@
+@page "{id:int}"
+@model BookBoard.Pages.DeleteBoardModel
+@{
+    ViewData["Title"] = "Delete Board";
+}
+
+@if (Model.Board != null)
+{
+    <div class="delete-page">
+        <div class="delete-card">
+            <h1>Delete Board?</h1>
+            <p>
+                Are you sure you want to delete <strong>@Model.Board.Title</strong>?
+                This will also delete all books saved inside this board.
+            </p>
+
+            <div class="delete-summary">
+                <p><strong>Description:</strong> @Model.Board.Description</p>
+                <p><strong>Books inside:</strong> @Model.Board.Books.Count</p>
+            </div>
+
+            <form method="post" class="form-actions">
+                <button type="submit" class="btn btn-danger-soft">Yes, Delete Board</button>
+                <a asp-page="/BoardDetails" asp-route-id="@Model.Board.Id" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+}

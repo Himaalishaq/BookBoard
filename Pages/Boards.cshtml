@@ -1,0 +1,74 @@
+@page
+@model BookBoard.Pages.BoardsModel
+@{
+    ViewData["Title"] = "Boards";
+}
+
+<div class="boards-page">
+    <div class="section-heading text-center">
+        <h1>Your Boards</h1>
+        <p>Create and organize beautiful reading spaces for every mood and moment.</p>
+    </div>
+
+    <div class="text-center">
+        <a asp-page="/CreateBoard" class="btn btn-primary">Create New Board</a>
+    </div>
+
+    <div class="boards-grid">
+        @if (Model.Boards.Count == 0)
+        {
+            <div class="board-card add-board-card">
+                <div class="add-board-inner">
+                    <div class="plus-icon">+</div>
+                    <h3>No boards yet</h3>
+                    <p>Create your first aesthetic reading board.</p>
+                    <a asp-page="/CreateBoard" class="btn btn-outline-secondary mt-3">Start a Board</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var board in Model.Boards)
+            {
+                <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
+                    <div class="board-preview preview-one"></div>
+
+                    <div class="board-content">
+                        <div class="board-top-row">
+                            <h3>@board.Title</h3>
+
+                            @if (board.IsPublic)
+                            {
+                                <span class="visibility-badge">Public</span>
+                            }
+                            else
+                            {
+                                <span class="visibility-badge private">Private</span>
+                            }
+                        </div>
+
+                        <p>@board.Description</p>
+
+                        @if (!string.IsNullOrWhiteSpace(board.MoodTags))
+                        {
+                            <div class="small-tag-row">
+                                @foreach (var tag in board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <span class="small-tag">@tag</span>
+                                }
+                            </div>
+                        }
+
+                        <p class="book-count">@board.Books.Count book(s)</p>
+
+                        <div class="card-actions">
+                            <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="btn btn-primary btn-sm">View</a>
+                            <a asp-page="/EditBoard" asp-route-id="@board.Id" class="btn btn-outline-secondary btn-sm">Edit</a>
+                            <a asp-page="/DeleteBoard" asp-route-id="@board.Id" class="btn btn-danger-soft btn-sm">Delete</a>
+                        </div>
+                    </div>
+                </a>
+            }
+        }
+    </div>
+</div>

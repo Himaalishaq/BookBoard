@@ -1,0 +1,105 @@
+@page "{bookId:int}"
+@model BookBoard.Pages.SaveBookModel
+@{
+    ViewData["Title"] = "Save Book";
+}
+
+<div class="create-board-page">
+    <div class="section-heading text-center">
+        <h1>Save to Board</h1>
+        <p>Choose one of your boards and add your own mood tags and reflection.</p>
+    </div>
+
+    @if (Model.SourceBook != null)
+    {
+        <div class="save-book-preview">
+            @if (!string.IsNullOrWhiteSpace(Model.SourceBook.CoverUrl))
+            {
+                <img src="@Model.SourceBook.CoverUrl" alt="@Model.SourceBook.Title cover" />
+            }
+            else
+            {
+                <div class="save-book-cover-placeholder">No cover</div>
+            }
+
+            <div>
+                <h2>@Model.SourceBook.Title</h2>
+
+                @if (!string.IsNullOrWhiteSpace(Model.SourceBook.Author))
+                {
+                    <p>@Model.SourceBook.Author</p>
+                }
+
+                @if (Model.SourceBook.PublishedYear.HasValue)
+                {
+                    <span class="api-year">@Model.SourceBook.PublishedYear</span>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.SourceBook.ShortDescription))
+                {
+                    <p class="book-description">@Model.SourceBook.ShortDescription</p>
+                }
+
+                @if (Model.SourceBook.Board != null)
+                {
+                    <p class="book-location">
+                        Found from
+                        <a asp-page="/BoardDetails" asp-route-id="@Model.SourceBook.Board.Id">
+                            @Model.SourceBook.Board.Title
+                        </a>
+                    </p>
+                }
+            </div>
+        </div>
+    }
+
+    @if (Model.UserBoards.Count == 0)
+    {
+        <div class="empty-state">
+            <h3>You do not have any boards yet</h3>
+            <p>Create a board first, then come back and save books to it.</p>
+            <a asp-page="/CreateBoard" class="btn btn-primary">Create Board</a>
+        </div>
+    }
+    else
+    {
+        <form method="post" class="board-form">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Input.SourceBookId" />
+
+            <div class="form-group">
+                <label asp-for="Input.TargetBoardId">Choose Board</label>
+                <select asp-for="Input.TargetBoardId">
+                    <option value="">Choose a board...</option>
+
+                    @foreach (var board in Model.UserBoards)
+                    {
+                        <option value="@board.Id">@board.Title</option>
+                    }
+                </select>
+                <span asp-validation-for="Input.TargetBoardId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.MoodTags">Mood / Vibe Tags</label>
+                <input asp-for="Input.MoodTags" placeholder="reflective, cozy, spiritual, gloomy" />
+                <small>Separate tags with commas. You can keep the original tags or add your own.</small>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.Reflection">Your Reflection</label>
+                <textarea asp-for="Input.Reflection" placeholder="Why do you want to save this book? What feeling does it match?"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save to Board</button>
+                <a asp-page="/Discover" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

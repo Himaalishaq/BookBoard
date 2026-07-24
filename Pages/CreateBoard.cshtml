@@ -1,0 +1,45 @@
+@page
+@model BookBoard.Pages.CreateBoardModel
+@{
+    ViewData["Title"] = "Create Board";
+}
+
+<div class="create-board-page">
+    <div class="section-heading text-center">
+        <h1>Create a New Board</h1>
+        <p>Build a cozy book collection around a mood, aesthetic, or reading vibe.</p>
+    </div>
+
+    <form method="post" class="board-form">
+        <div class="form-group">
+            <label asp-for="Board.Title">Board Title</label>
+            <input asp-for="Board.Title" placeholder="Example: Rainy Gloomy Day Reads" />
+            <span asp-validation-for="Board.Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Board.Description">Description</label>
+            <textarea asp-for="Board.Description" placeholder="Describe the feeling of this board..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Board.MoodTags">Mood / Vibe Tags</label>
+            <input asp-for="Board.MoodTags" placeholder="cozy, gloomy, reflective, spiritual" />
+            <small>Separate tags with commas.</small>
+        </div>
+
+        <div class="checkbox-row">
+            <input asp-for="Board.IsPublic" />
+            <label asp-for="Board.IsPublic">Make this board public</label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Board</button>
+            <a asp-page="/Boards" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

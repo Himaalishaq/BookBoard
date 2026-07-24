@@ -1,0 +1,147 @@
+@page "{boardId:int}"
+@model BookBoard.Pages.AddBookModel
+@{
+    ViewData["Title"] = "Add Book";
+}
+
+<div class="create-board-page">
+    <div class="section-heading text-center">
+        <h1>Add a Book</h1>
+        <p>Search for a book, auto-fill its details, then add your own mood tags and reflection.</p>
+    </div>
+
+    <div class="book-api-search-card">
+        <h2>Search book database</h2>
+        <p>Search by title or author. Choose a result to auto-fill the form below.</p>
+
+        <form method="get" class="book-api-search-form">
+            <input type="text"
+                   name="searchQuery"
+                   value="@Model.SearchQuery"
+                   placeholder="Try: The Midnight Library, The Alchemist, Atomic Habits..." />
+
+            <button type="submit">Search Books</button>
+        </form>
+
+        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+        {
+            <div class="api-results-section">
+                <h3>Results for “@Model.SearchQuery”</h3>
+
+                @if (Model.SearchResults.Count == 0)
+                {
+                    <p class="empty-small">No results found. Try a different title or author.</p>
+                }
+                else
+                {
+                    <div class="api-book-results-grid">
+                        @foreach (var result in Model.SearchResults)
+                        {
+                            <div class="api-book-result-card">
+                                @if (!string.IsNullOrWhiteSpace(result.CoverUrl))
+                                {
+                                    <img src="@result.CoverUrl" alt="@result.Title cover" />
+                                }
+                                else
+                                {
+                                    <div class="api-cover-placeholder">No cover</div>
+                                }
+
+                                <div class="api-book-result-info">
+                                    <h4>@result.Title</h4>
+                                    <p>@result.Author</p>
+
+                                    @if (result.PublishedYear.HasValue)
+                                    {
+                                        <span class="api-year">@result.PublishedYear</span>
+                                    }
+
+                                    @if (!string.IsNullOrWhiteSpace(result.ShortDescription))
+                                    {
+                                        <p class="api-description">@result.ShortDescription</p>
+                                    }
+
+                                    <button type="button"
+                                            class="btn btn-outline-secondary btn-sm use-book-button"
+                                            data-title="@result.Title"
+                                            data-author="@result.Author"
+                                            data-cover="@result.CoverUrl"
+                                            data-year="@result.PublishedYear"
+                                            data-description="@result.ShortDescription">
+                                        Use This Book
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <form method="post" class="board-form">
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <input type="hidden" asp-for="BoardBook.BoardId" />
+
+        <div class="form-group">
+            <label asp-for="BoardBook.Title">Book Title</label>
+            <input asp-for="BoardBook.Title" placeholder="Example: The Midnight Library" />
+            <span asp-validation-for="BoardBook.Title" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BoardBook.Author">Author</label>
+            <input asp-for="BoardBook.Author" placeholder="Example: Matt Haig" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BoardBook.PublishedYear">Published Year</label>
+            <input asp-for="BoardBook.PublishedYear" placeholder="Example: 2020" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BoardBook.CoverUrl">Cover Image URL</label>
+            <input asp-for="BoardBook.CoverUrl" placeholder="Auto-filled from search, or paste an image link" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BoardBook.ShortDescription">Book Description</label>
+            <textarea asp-for="BoardBook.ShortDescription" placeholder="Auto-filled if available"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BoardBook.MoodTags">Mood / Vibe Tags</label>
+            <input asp-for="BoardBook.MoodTags" placeholder="reflective, emotional, hopeful, spiritual" />
+            <small>Separate tags with commas.</small>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BoardBook.Reflection">Your Reflection</label>
+            <textarea asp-for="BoardBook.Reflection" placeholder="How does this book feel? Why does it belong on this board?"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Book</button>
+            <a asp-page="/BoardDetails" asp-route-id="@Model.BoardBook.BoardId" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.querySelectorAll(".use-book-button").forEach(button => {
+            button.addEventListener("click", () => {
+                document.getElementById("BoardBook_Title").value = button.dataset.title || "";
+                document.getElementById("BoardBook_Author").value = button.dataset.author || "";
+                document.getElementById("BoardBook_CoverUrl").value = button.dataset.cover || "";
+                document.getElementById("BoardBook_PublishedYear").value = button.dataset.year || "";
+                document.getElementById("BoardBook_ShortDescription").value = button.dataset.description || "";
+
+                document.getElementById("BoardBook_MoodTags").focus();
+            });
+        });
+    </script>
+}
