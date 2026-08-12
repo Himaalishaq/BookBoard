@@ -1,14 +1,25 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BookBoard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BookBoard.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        string? currentPage = ViewContext.RouteData.Values["page"]?.ToString();
+
+        string NavClass(string page) =>
+            currentPage == page ? "nav-link active-nav-link" : "nav-link";
+    }
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm mb-3">
             <div class="container">
@@ -21,16 +32,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
+                            <a class="@NavClass("/Index")" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Boards">Boards</a>
+                            <a class="@NavClass("/Boards")" asp-area="" asp-page="/Boards">Boards</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Discover">Discover</a>
+                            <a class="@NavClass("/Discover")" asp-area="" asp-page="/Discover">Discover</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Profile">Profile</a>
+                            <a class="@NavClass("/Profile")" asp-area="" asp-page="/Profile">Profile</a>
                         </li>
                         <partial name="_LoginPartial" />
 
@@ -46,9 +57,14 @@
         </main>
     </div>
 
-    <footer class="footer text-muted mt-4">
-        <div class="container">
-            &copy; 2026 - BookBoard
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <span class="footer-brand-icon">📖</span>
+                <span>BookBoard</span>
+            </div>
+            <p class="footer-tagline">Your cozy corner for discovering, saving, and organizing books by mood, vibe, and taste.</p>
+            <p class="footer-copyright">&copy; 2026 BookBoard</p>
         </div>
     </footer>
 

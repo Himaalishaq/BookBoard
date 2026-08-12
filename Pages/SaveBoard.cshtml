@@ -1,0 +1,37 @@
+@page "{boardId:int}"
+@model BookBoard.Pages.SaveBoardModel
+@{
+    ViewData["Title"] = "Save to Inspiration";
+}
+
+@if (Model.Board != null)
+{
+    <div class="create-board-page">
+        <div class="section-heading text-center">
+            <h1>@(Model.IsSaved ? "Remove from Inspiration?" : "Save to Inspiration?")</h1>
+            <p>
+                @(Model.IsSaved
+                    ? "This board will no longer show up in your inspiration."
+                    : "Keep this board close so you can come back to it whenever this vibe calls.")
+            </p>
+        </div>
+
+        <div class="save-board-preview">
+            <partial name="_BoardAestheticCard" model="Model.Board" />
+        </div>
+
+        <form method="post" class="board-form">
+            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    @(Model.IsSaved ? "Remove from Inspiration" : "Save to Inspiration")
+                </button>
+
+                <a asp-page="/BoardDetails" asp-route-id="@Model.Board.Id" class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+}

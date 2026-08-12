@@ -21,6 +21,10 @@ namespace BookBoard.Data
 
         public DbSet<BookTag> BookTags { get; set; }
 
+        public DbSet<BoardVisualItem> BoardVisualItems { get; set; }
+
+        public DbSet<SavedBoard> SavedBoards { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -54,6 +58,24 @@ namespace BookBoard.Data
                 .HasOne(bookTag => bookTag.Tag)
                 .WithMany(tag => tag.BookTags)
                 .HasForeignKey(bookTag => bookTag.TagId);
+
+            builder.Entity<BoardVisualItem>()
+                .HasOne(item => item.Board)
+                .WithMany(board => board.VisualItems)
+                .HasForeignKey(item => item.BoardId);
+
+            builder.Entity<SavedBoard>()
+                .HasKey(savedBoard => new { savedBoard.UserId, savedBoard.BoardId });
+
+            builder.Entity<SavedBoard>()
+                .HasOne(savedBoard => savedBoard.User)
+                .WithMany(user => user.SavedBoards)
+                .HasForeignKey(savedBoard => savedBoard.UserId);
+
+            builder.Entity<SavedBoard>()
+                .HasOne(savedBoard => savedBoard.Board)
+                .WithMany(board => board.SavedByUsers)
+                .HasForeignKey(savedBoard => savedBoard.BoardId);
         }
     }
 }

@@ -4,79 +4,137 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="hero-section text-center">
-    <h1 class="display-4">Welcome to BookBoard</h1>
-    <p class="tagline">Your cozy corner for discovering, saving, and organizing books by mood, vibe, and taste.</p>
+<div class="home-page">
 
-    <div class="hero-buttons">
-        <a class="btn btn-primary" href="#">Start Exploring</a>
-        <a class="btn btn-outline-secondary" href="#">Create a Board</a>
-    </div>
-</div>
+    <section class="home-hero">
+        <div class="home-hero-glow"></div>
 
-<div class="features-preview">
-    <div class="feature-card">
-        <h3>Create aesthetic boards</h3>
-        <p>Organize your reads into cozy, dreamy, dark academia, summer, or comfort-book collections.</p>
-    </div>
+        <div class="home-hero-content">
+            <span class="home-kicker">Pinterest-inspired book discovery</span>
 
-    <div class="feature-card">
-        <h3>Discover by vibe</h3>
-        <p>Find books that match your mood, favorite themes, and reading energy.</p>
-    </div>
+            <h1>Build reading boards that feel like you.</h1>
 
-    <div class="feature-card">
-        <h3>Save your next read</h3>
-        <p>Build your perfect TBR and keep all your favorite finds in one beautiful place.</p>
-    </div>
-</div>
+            <p>
+                Create visual book collages, save books by mood, and discover boards that match your current vibe.
+            </p>
 
-<div class="books-showcase">
-    <div class="section-heading text-center">
-        <h2>Browse by mood</h2>
-        <p>Find your next read through cozy vibes, soft aesthetics, and reader moods.</p>
-    </div>
+            <form method="get" asp-page="/Discover" class="home-vibe-search">
+                <input 
+                    type="text" 
+                    name="query" 
+                    placeholder="Search a vibe: cozy winter, religious awakening, summer reads..." />
 
-    <div class="mood-tags">
-        <span class="mood-tag">Cozy</span>
-        <span class="mood-tag">Dark Academia</span>
-        <span class="mood-tag">Soft Romance</span>
-        <span class="mood-tag">Fantasy Escape</span>
-        <span class="mood-tag">Summer Reads</span>
-        <span class="mood-tag">Comfort Books</span>
-    </div>
+                <button type="submit">Find My Vibe</button>
+            </form>
 
-    <div class="book-grid">
-        <div class="book-card">
-            <div class="book-cover cover-one"></div>
-            <div class="book-info">
-                <h4>The Midnight Library</h4>
-                <p>Reflective • Emotional • Comforting</p>
+            <div class="home-hero-buttons">
+                <a asp-page="/Discover" class="btn btn-primary">
+                    Start Exploring
+                </a>
+
+                <a asp-page="/CreateBoard" class="btn btn-outline-secondary">
+                    Create a Board
+                </a>
             </div>
         </div>
 
-        <div class="book-card">
-            <div class="book-cover cover-two"></div>
-            <div class="book-info">
-                <h4>Anne of Green Gables</h4>
-                <p>Warm • Cozy • Classic</p>
-            </div>
+        <div class="home-collage-preview">
+            <div class="home-tile tile-image-like">🌙</div>
+            <div class="home-tile tile-quote">“Light after confusion”</div>
+            <div class="home-tile tile-image-like">✨</div>
+            <div class="home-tile tile-soft">spiritual</div>
+            <div class="home-tile tile-title">Religious Awakening</div>
+            <div class="home-tile tile-dark">🕯️</div>
+            <div class="home-tile tile-warm">healing</div>
+            <div class="home-tile tile-quote">books for becoming</div>
+            <div class="home-tile tile-image-like">📖</div>
+        </div>
+    </section>
+
+    <section class="home-features">
+        <a asp-page="/CreateBoard" class="home-feature-card">
+            <span>01</span>
+            <h3>Create collage boards</h3>
+            <p>Add books, quotes, icons, images, colors, and aesthetics into one visual reading board.</p>
+        </a>
+
+        <a asp-page="/Discover" class="home-feature-card">
+            <span>02</span>
+            <h3>Discover by mood</h3>
+            <p>Search the feeling you are in and find boards or books that match that emotional vibe.</p>
+        </a>
+
+        <a asp-page="/Profile" class="home-feature-card">
+            <span>03</span>
+            <h3>Save your taste</h3>
+            <p>Build a profile around your favorite moods, boards, books, and reading identity.</p>
+        </a>
+    </section>
+
+    <section class="home-mood-section">
+        <div class="section-heading text-center">
+            <h2>Browse by mood</h2>
+            <p>Start with a feeling, then find books and boards that match it.</p>
         </div>
 
-        <div class="book-card">
-            <div class="book-cover cover-three"></div>
-            <div class="book-info">
-                <h4>Six of Crows</h4>
-                <p>Dark • Clever • Fast-Paced</p>
-            </div>
+        <div class="home-mood-tags">
+            <a asp-page="/Discover" asp-route-mood="cozy" class="mood-tag">Cozy</a>
+            <a asp-page="/Discover" asp-route-mood="dark academia" class="mood-tag">Dark Academia</a>
+            <a asp-page="/Discover" asp-route-mood="spiritual" class="mood-tag">Spiritual</a>
+            <a asp-page="/Discover" asp-route-mood="healing" class="mood-tag">Healing</a>
+            <a asp-page="/Discover" asp-route-mood="summer" class="mood-tag">Summer Reads</a>
+            <a asp-page="/Discover" asp-route-mood="comfort" class="mood-tag">Comfort Books</a>
+            <a asp-page="/Discover" asp-route-mood="rainy" class="mood-tag">Rainy Day</a>
+            <a asp-page="/Discover" asp-route-mood="fantasy" class="mood-tag">Fantasy Escape</a>
+        </div>
+    </section>
+
+    <section class="home-board-preview-section">
+        <div class="section-heading text-center">
+            <h2>What your boards can become</h2>
+            <p>Not just lists of books — visual worlds made from moods, symbols, quotes, and stories.</p>
         </div>
 
-        <div class="book-card">
-            <div class="book-cover cover-four"></div>
-            <div class="book-info">
-                <h4>Beach Read</h4>
-                <p>Light • Romantic • Summer</p>
-            </div>
+        <div class="home-board-preview-grid">
+            <a asp-page="/Discover" asp-route-mood="spiritual" class="home-aesthetic-board board-spiritual">
+                <div class="mini-collage">
+                    <span>🌙</span>
+                    <span>✨</span>
+                    <span>🕯️</span>
+                    <span>faith</span>
+                    <span>light</span>
+                    <span>📖</span>
+                </div>
+                <h3>Religious Awakening</h3>
+                <p>spiritual • healing • reflective</p>
+            </a>
+
+            <a asp-page="/Discover" asp-route-mood="summer" class="home-aesthetic-board board-summer">
+                <div class="mini-collage">
+                    <span>☀️</span>
+                    <span>🌿</span>
+                    <span>🌼</span>
+                    <span>warm</span>
+                    <span>soft</span>
+                    <span>🍋</span>
+                </div>
+                <h3>Summer Reads</h3>
+                <p>warm • nostalgic • light</p>
+            </a>
+
+            <a asp-page="/Discover" asp-route-mood="dark academia" class="home-aesthetic-board board-academia">
+                <div class="mini-collage">
+                    <span>📚</span>
+                    <span>🕯️</span>
+                    <span>🖋️</span>
+                    <span>rain</span>
+                    <span>mystery</span>
+                    <span>☕</span>
+                </div>
+                <h3>Dark Academia</h3>
+                <p>gloomy • clever • classic</p>
+            </a>
         </div>
-    </div>
+    </section>
+
 </div>

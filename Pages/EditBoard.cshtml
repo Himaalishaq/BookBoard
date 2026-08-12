@@ -1,61 +1,92 @@
 @page "{id:int}"
-@model BookBoard.Pages.EditBookModel
+@model BookBoard.Pages.EditBoardModel
 @{
-    ViewData["Title"] = "Edit Book";
+    ViewData["Title"] = "Edit Board";
 }
 
 <div class="create-board-page">
     <div class="section-heading text-center">
-        <h1>Edit Book</h1>
-        <p>Update this book’s details, mood tags, or reflection.</p>
+        <h1>Edit Board</h1>
+        <p>Update the mood, aesthetic, and visual identity of this board.</p>
     </div>
 
     <form method="post" class="board-form">
         <div asp-validation-summary="All" class="text-danger"></div>
 
-        <input type="hidden" asp-for="BoardBook.Id" />
-        <input type="hidden" asp-for="BoardBook.BoardId" />
+        <input type="hidden" asp-for="Board.Id" />
 
         <div class="form-group">
-            <label asp-for="BoardBook.Title">Book Title</label>
-            <input asp-for="BoardBook.Title" />
-            <span asp-validation-for="BoardBook.Title" class="text-danger"></span>
+            <label asp-for="Board.Title">Board Title</label>
+            <input asp-for="Board.Title" />
+            <span asp-validation-for="Board.Title" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="BoardBook.Author">Author</label>
-            <input asp-for="BoardBook.Author" />
+            <label asp-for="Board.Description">Description</label>
+            <textarea asp-for="Board.Description"></textarea>
         </div>
 
         <div class="form-group">
-            <label asp-for="BoardBook.PublishedYear">Published Year</label>
-            <input asp-for="BoardBook.PublishedYear" />
-        </div>
-
-        <div class="form-group">
-            <label asp-for="BoardBook.CoverUrl">Cover Image URL</label>
-            <input asp-for="BoardBook.CoverUrl" />
-        </div>
-
-        <div class="form-group">
-            <label asp-for="BoardBook.ShortDescription">Book Description</label>
-            <textarea asp-for="BoardBook.ShortDescription"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="BoardBook.MoodTags">Mood / Vibe Tags</label>
-            <input asp-for="BoardBook.MoodTags" />
+            <label asp-for="Board.MoodTags">Mood / Vibe Tags</label>
+            <input asp-for="Board.MoodTags" />
             <small>Separate tags with commas.</small>
         </div>
 
-        <div class="form-group">
-            <label asp-for="BoardBook.Reflection">Your Reflection</label>
-            <textarea asp-for="BoardBook.Reflection"></textarea>
+        <div class="aesthetic-studio">
+            <h2>Board Aesthetic Studio</h2>
+            <p>Change how this board appears when people browse through reading worlds.</p>
+
+            <div class="form-group">
+                <label asp-for="Board.Theme">Theme</label>
+                <select asp-for="Board.Theme">
+                    <option value="cozy">Cozy</option>
+                    <option value="spiritual">Spiritual</option>
+                    <option value="summer">Summer</option>
+                    <option value="dark-academia">Dark Academia</option>
+                    <option value="rainy">Rainy Day</option>
+                    <option value="fantasy">Fantasy</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Board.BackgroundStyle">Background Style</label>
+                <select asp-for="Board.BackgroundStyle">
+                    <option value="soft-glow">Soft Glow</option>
+                    <option value="stars">Stars</option>
+                    <option value="sunlight">Sunlight</option>
+                    <option value="paper">Vintage Paper</option>
+                    <option value="rain">Rainy Glass</option>
+                    <option value="forest">Forest Mist</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Board.AccentColor">Accent Color</label>
+                <select asp-for="Board.AccentColor">
+                    <option value="brown">Warm Brown</option>
+                    <option value="gold">Soft Gold</option>
+                    <option value="green">Forest Green</option>
+                    <option value="blue">Midnight Blue</option>
+                    <option value="lavender">Lavender</option>
+                    <option value="rose">Dusty Rose</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Board.IconSymbols">Board Symbols</label>
+                <input asp-for="Board.IconSymbols" placeholder="🌙, ✨, 🕯️" />
+                <small>Separate symbols with commas.</small>
+            </div>
+        </div>
+
+        <div class="checkbox-row">
+            <input asp-for="Board.IsPublic" />
+            <label asp-for="Board.IsPublic">Make this board public</label>
         </div>
 
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Save Changes</button>
-            <a asp-page="/BoardDetails" asp-route-id="@Model.BoardBook.BoardId" class="btn btn-outline-secondary">Cancel</a>
+            <a asp-page="/BoardDetails" asp-route-id="@Model.Board.Id" class="btn btn-outline-secondary">Cancel</a>
         </div>
     </form>
 </div>

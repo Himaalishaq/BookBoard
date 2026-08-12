@@ -2,6 +2,8 @@
 @model BookBoard.Pages.ProfileModel
 @{
     ViewData["Title"] = "Profile";
+    ViewData["CurrentUserId"] = Model.CurrentUserId;
+    ViewData["SavedBoardIds"] = Model.SavedBoardIds;
 }
 
 <div class="profile-page">
@@ -49,6 +51,12 @@
             <h3>@Model.SavedBooks.Count</h3>
             <p>Saved Books</p>
         </div>
+
+        <div class="stat-card">
+            <h3>@Model.SavedBoards.Count</h3>
+            <p>Inspiration Saved</p>
+        </div>
+
 
         <div class="stat-card">
             <h3>@Model.UserBoards.Count</h3>
@@ -145,44 +153,40 @@
             <div class="boards-grid">
                 @foreach (var board in Model.UserBoards.Take(6))
                 {
-                    <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
-                        <div class="board-preview preview-one"></div>
-
-                        <div class="board-content">
-                            <div class="board-top-row">
-                                <h3>@board.Title</h3>
-
-                                @if (board.IsPublic)
-                                {
-                                    <span class="visibility-badge">Public</span>
-                                }
-                                else
-                                {
-                                    <span class="visibility-badge private">Private</span>
-                                }
-                            </div>
-
-                            <p>@board.Description</p>
-
-                            @if (!string.IsNullOrWhiteSpace(board.MoodTags))
-                            {
-                                <div class="small-tag-row">
-                                    @foreach (var tag in board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                                    {
-                                        <span class="small-tag">@tag</span>
-                                    }
-                                </div>
-                            }
-
-                            <p class="book-count">@board.Books.Count book(s)</p>
-                        </div>
-                    </a>
+                    <partial name="_BoardAestheticCard" model="board" />
                 }
             </div>
         }
     </div>
 
     <div class="profile-section">
+        <div class="profile-section-header">
+            <div>
+                <h2>Boards That Inspired You</h2>
+                <p>The boards you keep coming back to, saved from other readers.</p>
+            </div>
+
+            <a asp-page="/Discover" class="btn btn-outline-secondary">Discover More</a>
+        </div>
+
+        @if (Model.SavedBoards.Count == 0)
+        {
+            <div class="empty-state">
+                <h3>Nothing saved yet</h3>
+                <p>Explore public boards and save the ones that spark something for you.</p>
+                <a asp-page="/Discover" class="btn btn-primary">Explore Boards</a>
+            </div>
+        }
+        else
+        {
+            <div class="boards-grid">
+                @foreach (var board in Model.SavedBoards.Take(6))
+                {
+                    <partial name="_BoardAestheticCard" model="board" />
+                }
+            </div>
+        }
+    </div>
         <h2>Recently saved books</h2>
 
         @if (Model.SavedBooks.Count == 0)

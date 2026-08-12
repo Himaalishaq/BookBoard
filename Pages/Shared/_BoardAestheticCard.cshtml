@@ -1,0 +1,295 @@
+@model BookBoard.Models.Board
+
+@{
+    string theme = string.IsNullOrWhiteSpace(Model.Theme) ? "cozy" : Model.Theme;
+    string background = string.IsNullOrWhiteSpace(Model.BackgroundStyle) ? "soft-glow" : Model.BackgroundStyle;
+    string accent = string.IsNullOrWhiteSpace(Model.AccentColor) ? "brown" : Model.AccentColor;
+
+    string themeClass = "theme-" + theme.ToLower().Replace(" ", "-");
+    string backgroundClass = "bg-" + background.ToLower().Replace(" ", "-");
+    string accentClass = "accent-" + accent.ToLower().Replace(" ", "-");
+
+    var icons = string.IsNullOrWhiteSpace(Model.IconSymbols)
+        ? new List<string> { "📚", "☕", "✨" }
+        : Model.IconSymbols.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+
+    bool hasVisualItems = (Model.VisualItems?.Count ?? 0) > 0;
+
+    var booksWithCovers = (Model.Books ?? new List<BookBoard.Models.BoardBook>())
+        .Where(b => !string.IsNullOrWhiteSpace(b.CoverUrl))
+        .OrderByDescending(b => b.CreatedAt)
+        .ToList();
+
+    bool hasCustomCollage = hasVisualItems || booksWithCovers.Count > 0;
+
+    var collageTiles = new List<(string Type, string Content)>();
+
+    if (hasVisualItems)
+    {
+        // Primary source: the board owner's own hand-placed tiles.
+        foreach (var item in Model.VisualItems.OrderBy(visual => visual.SortOrder))
+        {
+            if (collageTiles.Count >= 6)
+            {
+                break;
+            }
+
+            collageTiles.Add((item.ItemType, item.Content));
+        }
+
+        // Fill any remaining slots with this board's book covers.
+        if (collageTiles.Count < 6)
+        {
+            foreach (var book in booksWithCovers)
+            {
+                if (collageTiles.Count >= 6)
+                {
+                    break;
+                }
+
+                collageTiles.Add(("bookcover", book.CoverUrl));
+            }
+        }
+    }
+    else if (booksWithCovers.Count > 0)
+    {
+        // No hand-built tiles yet: book covers themselves become the primary collage tiles.
+        foreach (var book in booksWithCovers)
+        {
+            if (collageTiles.Count >= 6)
+            {
+                break;
+            }
+
+            collageTiles.Add(("bookcover", book.CoverUrl));
+        }
+    }
+
+    // Fill anything still empty with mood-tag words, then cycle through theme icons.
+    // Fill anything still empty with mood-tag words, then either theme icons
+    // (only if the board truly has no photos yet) or soft accent color tiles
+    // (if photos already exist, so emoji never compete with real images).
+    if (hasCustomCollage)
+    {
+        if (collageTiles.Count < 6 && !string.IsNullOrWhiteSpace(Model.MoodTags))
+        {
+            foreach (var word in Model.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (collageTiles.Count >= 6)
+                {
+                    break;
+                }
+
+                collageTiles.Add(("text", word));
+            }
+        }
+
+        bool hasPhoto = collageTiles.Any(t => t.Type == "image" || t.Type == "bookcover");
+
+        if (!hasPhoto)
+        {
+            // No real images anywhere on this board yet: icons are allowed to
+            // fill the rest, since they're the only visual content available.
+            int cycleIndex = 0;
+
+            while (collageTiles.Count < 6 && icons.Count > 0 && cycleIndex < 20)
+            {
+                collageTiles.Add(("icon", icons[cycleIndex % icons.Count]));
+                cycleIndex++;
+            }
+        }
+        else
+        {
+            // Real photos already anchor this board: finish the grid with soft
+            // accent color tiles instead of emoji, so images and book covers
+            // stay the dominant visual, not decorative symbols.
+            var accentColors = new Dictionary<string, string>
+            {
+                { "brown", "#c9a37f" },
+                { "gold", "#e8c988" },
+                { "green", "#b7cfa4" },
+                { "blue", "#b6c4e0" },
+                { "lavender", "#d9c6ec" },
+                { "rose", "#eac6c6" }
+            };
+
+            string fillColor = accentColors.TryGetValue(accent.ToLower(), out var accentHex)
+                ? accentHex
+                : "#c9a37f";
+
+            while (collageTiles.Count < 6)
+            {
+                collageTiles.Add(("color", fillColor));
+            }
+        }
+
+        // Give the card a strong visual anchor: promote the first real photo
+        // (image or book cover) into the prime "hero" slot, rather than letting
+        // whatever landed there first (often just an icon) sit in the biggest tile.
+        int heroIndex = collageTiles.FindIndex(t => t.Type == "image" || t.Type == "bookcover");
+
+        if (heroIndex > 0)
+        {
+            var hero = collageTiles[heroIndex];
+            collageTiles.RemoveAt(heroIndex);
+            collageTiles.Insert(0, hero);
+        }
+    }
+
+    // Named slots (see .mini-collage-grid grid-template-areas): hero is the big
+    // anchor tile, title always sits center, b/c/d/e/f are the smaller supporting tiles.
+    var slotNames = new[] { "hero", "b", "c", "d", "e", "f" };
+    var gridCells = new List<(string Slot, string Type, string Content)>();
+
+    for (int i = 0; i < collageTiles.Count && i < slotNames.Length; i++)
+    {
+        gridCells.Add((slotNames[i], collageTiles[i].Type, collageTiles[i].Content));
+    }
+
+    gridCells.Insert(Math.Min(3, gridCells.Count), ("title", "title", Model.Title));
+
+    string Truncate(string text, int max) =>
+        text.Length <= max ? text : text.Substring(0, max).TrimEnd() + "…";
+
+    var savedBoardIds = ViewData["SavedBoardIds"] as HashSet<int> ?? new HashSet<int>();
+    string currentUserId = ViewData["CurrentUserId"] as string ?? string.Empty;
+
+    bool isOwner = !string.IsNullOrWhiteSpace(currentUserId) && Model.UserId == currentUserId;
+    bool isSaved = savedBoardIds.Contains(Model.Id);
+
+    string returnUrl = Context.Request.Path.ToString() + Context.Request.QueryString.ToString();
+}
+
+<div class="board-card-shell">
+    <a asp-page="/BoardDetails"
+       asp-route-id="@Model.Id"
+       class="board-link-card aesthetic-board-card @themeClass @backgroundClass @accentClass @(hasCustomCollage ? "is-collage-card" : "")">
+
+        @if (hasCustomCollage)
+        {
+            <div class="mini-collage-grid">
+                @foreach (var cell in gridCells)
+                {
+                    @if (cell.Type == "title")
+                    {
+                        <div class="collage-title-tile @accentClass collage-slot-title">
+                            <span>@cell.Content</span>
+                        </div>
+                    }
+                    else if (cell.Type == "image")
+                    {
+                        <div class="cover-tile collage-slot-@cell.Slot">
+                            <img src="@cell.Content" alt="" />
+                        </div>
+                    }
+                    else if (cell.Type == "bookcover")
+                    {
+                        <div class="cover-tile cover-tile-bookcover collage-slot-@cell.Slot">
+                            <img src="@cell.Content" alt="Book cover" />
+                        </div>
+                    }
+                    else if (cell.Type == "text")
+                    {
+                        <div class="cover-tile collage-slot-@cell.Slot">
+                            <div class="cover-tile-text">"@Truncate(cell.Content, cell.Slot == "hero" ? 60 : 34)"</div>
+                        </div>
+                    }
+                    else if (cell.Type == "icon")
+                    {
+                        <div class="cover-tile collage-slot-@cell.Slot">
+                            <div class="cover-tile-icon">@cell.Content</div>
+                        </div>
+                    }
+                    else if (cell.Type == "color")
+                    {
+                        <div class="cover-tile collage-slot-@cell.Slot">
+                            <div class="cover-tile-color" style="background-color: @cell.Content;"></div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="aesthetic-card-footer collage-footer">
+                @if (Model.IsPublic)
+                {
+                    <span class="visibility-badge">Public</span>
+                }
+                else
+                {
+                    <span class="visibility-badge private">Private</span>
+                }
+                <span>@Model.Books.Count book(s)</span>
+            </div>
+        }
+        else
+        {
+            <div class="board-cover-collage cover-count-0 cover-size-short">
+                <div class="aesthetic-card-glow"></div>
+
+                <div class="aesthetic-icons cover-placeholder-icons">
+                    @foreach (var icon in icons.Take(3))
+                    {
+                        <span>@icon</span>
+                    }
+                </div>
+            </div>
+
+            <div class="aesthetic-board-content">
+                <div class="board-top-row">
+                    <h3>@Model.Title</h3>
+
+                    @if (Model.IsPublic)
+                    {
+                        <span class="visibility-badge">Public</span>
+                    }
+                    else
+                    {
+                        <span class="visibility-badge private">Private</span>
+                    }
+                </div>
+
+                <p>@Model.Description</p>
+
+                @if (!string.IsNullOrWhiteSpace(Model.MoodTags))
+                {
+                    <div class="small-tag-row">
+                        @foreach (var tag in Model.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <span class="small-tag">@tag</span>
+                        }
+                    </div>
+                }
+
+                <div class="aesthetic-card-footer">
+                    <span>@Model.Books.Count book(s)</span>
+                    <span class="theme-label">@theme.Replace("-", " ")</span>
+                </div>
+            </div>
+        }
+    </a>
+
+    @if (!isOwner)
+    {
+        <div class="board-save-card-action @(isSaved ? "always-visible" : "")">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form method="post" asp-page="/SaveBoard" asp-route-boardId="@Model.Id">
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+                    <button type="submit" class="save-board-mini @(isSaved ? "saved" : "")">
+                        @(isSaved ? "In Your Inspiration" : "Save to Inspiration")
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-area="Identity"
+                   asp-page="/Account/Login"
+                   asp-route-returnUrl="@returnUrl"
+                   class="save-board-mini">
+                    Login to Save
+                </a>
+            }
+        </div>
+    }
+</div>

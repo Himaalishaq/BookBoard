@@ -27,6 +27,11 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 builder.Services.AddHttpClient<OpenLibraryService>();
 builder.Services.AddScoped<TagService>();
 
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

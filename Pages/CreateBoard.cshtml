@@ -6,26 +6,75 @@
 
 <div class="create-board-page">
     <div class="section-heading text-center">
-        <h1>Create a New Board</h1>
-        <p>Build a cozy book collection around a mood, aesthetic, or reading vibe.</p>
+        <h1>Create a Board</h1>
+        <p>Build a reading world around a mood, feeling, or aesthetic.</p>
     </div>
 
     <form method="post" class="board-form">
+        <div asp-validation-summary="All" class="text-danger"></div>
+
         <div class="form-group">
             <label asp-for="Board.Title">Board Title</label>
-            <input asp-for="Board.Title" placeholder="Example: Rainy Gloomy Day Reads" />
+            <input asp-for="Board.Title" placeholder="Example: Religious Awakening" />
             <span asp-validation-for="Board.Title" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="Board.Description">Description</label>
-            <textarea asp-for="Board.Description" placeholder="Describe the feeling of this board..."></textarea>
+            <textarea asp-for="Board.Description" placeholder="What feeling, season, or life phase does this board represent?"></textarea>
         </div>
 
         <div class="form-group">
             <label asp-for="Board.MoodTags">Mood / Vibe Tags</label>
-            <input asp-for="Board.MoodTags" placeholder="cozy, gloomy, reflective, spiritual" />
+            <input asp-for="Board.MoodTags" placeholder="spiritual, healing, reflective, faith" />
             <small>Separate tags with commas.</small>
+        </div>
+
+        <div class="aesthetic-studio">
+            <h2>Board Aesthetic Studio</h2>
+            <p>Choose how this board should feel visually when people scroll through boards.</p>
+
+            <div class="form-group">
+                <label asp-for="Board.Theme">Theme</label>
+                <select asp-for="Board.Theme">
+                    <option value="cozy">Cozy</option>
+                    <option value="spiritual">Spiritual</option>
+                    <option value="summer">Summer</option>
+                    <option value="dark-academia">Dark Academia</option>
+                    <option value="rainy">Rainy Day</option>
+                    <option value="fantasy">Fantasy</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Board.BackgroundStyle">Background Style</label>
+                <select asp-for="Board.BackgroundStyle">
+                    <option value="soft-glow">Soft Glow</option>
+                    <option value="stars">Stars</option>
+                    <option value="sunlight">Sunlight</option>
+                    <option value="paper">Vintage Paper</option>
+                    <option value="rain">Rainy Glass</option>
+                    <option value="forest">Forest Mist</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Board.AccentColor">Accent Color</label>
+                <select asp-for="Board.AccentColor">
+                    <option value="brown">Warm Brown</option>
+                    <option value="gold">Soft Gold</option>
+                    <option value="green">Forest Green</option>
+                    <option value="blue">Midnight Blue</option>
+                    <option value="lavender">Lavender</option>
+                    <option value="rose">Dusty Rose</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Board.IconSymbols">Board Symbols</label>
+                <input asp-for="Board.IconSymbols" placeholder="🌙, ✨, 🕯️" />
+                <small>Separate symbols with commas. Examples: 🌙, ✨, 🕯️ or ☀️, 🌿, 🌼</small>
+            </div>
         </div>
 
         <div class="checkbox-row">
@@ -34,7 +83,7 @@
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save Board</button>
+            <button type="submit" class="btn btn-primary">Create Board</button>
             <a asp-page="/Boards" class="btn btn-outline-secondary">Cancel</a>
         </div>
     </form>

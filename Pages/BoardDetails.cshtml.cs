@@ -23,6 +23,10 @@ namespace BookBoard.Pages
 
         public bool IsOwner { get; set; }
 
+        public bool IsBoardSaved { get; set; }
+
+        public int SavedCount { get; set; }
+
         public List<BookRecommendation> Recommendations { get; set; } = new List<BookRecommendation>();
 
         public List<MoodStat> BoardDna { get; set; } = new List<MoodStat>();
@@ -30,6 +34,7 @@ namespace BookBoard.Pages
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Board = await _context.Boards
+                .Include(board => board.VisualItems)
                 .Include(board => board.BoardTags)
                     .ThenInclude(boardTag => boardTag.Tag)
                 .Include(board => board.Books)
@@ -51,6 +56,14 @@ namespace BookBoard.Pages
             {
                 return Forbid();
             }
+
+            SavedCount = await _context.SavedBoards
+                .CountAsync(saved => saved.BoardId == Board.Id);
+
+            IsBoardSaved = !string.IsNullOrWhiteSpace(userId) &&
+                await _context.SavedBoards.AnyAsync(saved =>
+                    saved.UserId == userId &&
+                    saved.BoardId == Board.Id);
 
             LoadBoardDna(Board);
             await LoadRecommendationsAsync(Board);

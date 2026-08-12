@@ -8,27 +8,113 @@
 {
     <div class="board-details-page">
 
-        <div class="board-details-header">
-            <div>
-                <h1>@Model.Board.Title</h1>
-                <p>@Model.Board.Description</p>
+        @{
+            string detailAccent = string.IsNullOrWhiteSpace(Model.Board.AccentColor) ? "brown" : Model.Board.AccentColor;
+            string detailAccentClass = "accent-" + detailAccent.ToLower().Replace(" ", "-");
 
-                @if (!string.IsNullOrWhiteSpace(Model.Board.MoodTags))
-                {
-                    <div class="small-tag-row">
-                        @foreach (var tag in Model.Board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            var detailIcons = string.IsNullOrWhiteSpace(Model.Board.IconSymbols)
+                ? new List<string> { "📚", "☕", "✨" }
+                : Model.Board.IconSymbols.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            var canvasItems = Model.Board.VisualItems.OrderBy(item => item.SortOrder).ToList();
+
+            var canvasBookCovers = Model.Board.Books
+                .Where(book => !string.IsNullOrWhiteSpace(book.CoverUrl))
+                .OrderByDescending(book => book.CreatedAt)
+                .ToList();
+
+            string ownerName = !string.IsNullOrWhiteSpace(Model.Board.User?.DisplayName)
+                ? Model.Board.User!.DisplayName
+                : (Model.Board.User?.Email ?? "a reader");
+        }
+
+        <div class="board-canvas-hero">
+            @if (canvasItems.Count > 0)
+            {
+                <div class="board-canvas-grid large-canvas">
+                    @foreach (var item in canvasItems)
+                    {
+                        <div class="canvas-tile tile-@item.TileStyle item-@item.ItemType">
+                            @if (item.ItemType == "image" || item.ItemType == "bookcover")
+                            {
+                                <img src="@item.Content" alt="Board aesthetic image" />
+                            }
+                            else if (item.ItemType == "text")
+                            {
+                                <div class="canvas-text-tile">
+                                    "@item.Content"
+                                </div>
+                            }
+                            else if (item.ItemType == "icon")
+                            {
+                                <div class="canvas-icon-tile">
+                                    @item.Content
+                                </div>
+                            }
+                            else if (item.ItemType == "color")
+                            {
+                                <div class="canvas-color-tile" style="background-color: @item.Content;">
+                                    <span>@item.Content</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else if (canvasBookCovers.Count > 0)
+            {
+                <div class="board-canvas-grid large-canvas">
+                    @foreach (var book in canvasBookCovers)
+                    {
+                        <div class="canvas-tile tile-normal item-bookcover">
+                            <img src="@book.CoverUrl" alt="@book.Title cover" />
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="board-canvas-empty @detailAccentClass">
+                    <div class="aesthetic-icons hero-icons">
+                        @foreach (var icon in detailIcons.Take(5))
                         {
-                            <span class="small-tag">@tag</span>
+                            <span>@icon</span>
                         }
                     </div>
+
+                    @if (Model.IsOwner)
+                    {
+                        <div class="board-canvas-empty-cta">
+                            <p>This board doesn't have a canvas yet.</p>
+                            <a asp-page="/CustomizeBoard" asp-route-id="@Model.Board.Id" class="btn btn-primary">
+                                Start Designing
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="board-info-bar">
+            <div class="board-info-titles">
+                <h1>@Model.Board.Title</h1>
+                <p class="board-owner-line">by @ownerName</p>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Board.Description))
+                {
+                    <p class="board-description-line">@Model.Board.Description</p>
                 }
             </div>
 
-            @if (Model.IsOwner)
-            {
-                <div class="board-header-actions">
+            <div class="board-header-actions">
+                @if (Model.IsOwner)
+                {
                     <a asp-page="/EditBoard" asp-route-id="@Model.Board.Id" class="btn btn-outline-secondary">
                         Edit Board
+                    </a>
+
+                    <a asp-page="/CustomizeBoard" asp-route-id="@Model.Board.Id" class="btn btn-outline-secondary">
+                        Canvas Studio
                     </a>
 
                     <a asp-page="/DeleteBoard" asp-route-id="@Model.Board.Id" class="btn btn-danger-soft">
@@ -38,9 +124,54 @@
                     <a asp-page="/AddBook" asp-route-boardId="@Model.Board.Id" class="btn btn-primary">
                         Add Book
                     </a>
-                </div>
-            }
+                }
+                else
+                {
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form method="post"
+                              asp-page="/SaveBoard"
+                              asp-route-boardId="@Model.Board.Id"
+                              class="save-board-detail-form">
+
+                            <input type="hidden"
+                                name="returnUrl"
+                                value="@($"/BoardDetails/{Model.Board.Id}")" />
+
+                            <button type="submit" class="btn btn-primary">
+                                @(Model.IsBoardSaved ? "In Your Inspiration" : "Save to Inspiration")
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity"
+                           asp-page="/Account/Login"
+                           asp-route-returnUrl="@($"/BoardDetails/{Model.Board.Id}")"
+                           class="btn btn-primary">
+                            Login to Save
+                        </a>
+                    }
+                }
+
+                @if (Model.SavedCount > 0)
+                {
+                    <span class="saved-count-pill">
+                        @Model.SavedCount saved
+                    </span>
+                }
+            </div>
         </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Board.MoodTags))
+        {
+            <div class="small-tag-row board-mood-tag-row">
+                @foreach (var tag in Model.Board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                {
+                    <span class="small-tag">@tag</span>
+                }
+            </div>
+        }
 
         <div class="board-insight-grid">
             <div class="insight-card board-dna-card">

@@ -2,6 +2,8 @@
 @model BookBoard.Pages.BoardsModel
 @{
     ViewData["Title"] = "Boards";
+    ViewData["CurrentUserId"] = Model.CurrentUserId;
+    ViewData["SavedBoardIds"] = Model.SavedBoardIds;
 }
 
 <div class="boards-page">
@@ -30,44 +32,7 @@
         {
             @foreach (var board in Model.Boards)
             {
-                <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="board-card board-link-card">
-                    <div class="board-preview preview-one"></div>
-
-                    <div class="board-content">
-                        <div class="board-top-row">
-                            <h3>@board.Title</h3>
-
-                            @if (board.IsPublic)
-                            {
-                                <span class="visibility-badge">Public</span>
-                            }
-                            else
-                            {
-                                <span class="visibility-badge private">Private</span>
-                            }
-                        </div>
-
-                        <p>@board.Description</p>
-
-                        @if (!string.IsNullOrWhiteSpace(board.MoodTags))
-                        {
-                            <div class="small-tag-row">
-                                @foreach (var tag in board.MoodTags.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                                {
-                                    <span class="small-tag">@tag</span>
-                                }
-                            </div>
-                        }
-
-                        <p class="book-count">@board.Books.Count book(s)</p>
-
-                        <div class="card-actions">
-                            <a asp-page="/BoardDetails" asp-route-id="@board.Id" class="btn btn-primary btn-sm">View</a>
-                            <a asp-page="/EditBoard" asp-route-id="@board.Id" class="btn btn-outline-secondary btn-sm">Edit</a>
-                            <a asp-page="/DeleteBoard" asp-route-id="@board.Id" class="btn btn-danger-soft btn-sm">Delete</a>
-                        </div>
-                    </div>
-                </a>
+                <partial name="_BoardAestheticCard" model="board" />
             }
         }
     </div>

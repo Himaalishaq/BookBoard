@@ -6,6 +6,8 @@ namespace BookBoard.Models
     {
         public int Id { get; set; }
 
+        public List<BoardVisualItem> VisualItems { get; set; } = new List<BoardVisualItem>();
+
         [Required]
         [StringLength(80)]
         public string Title { get; set; } = string.Empty;
@@ -13,8 +15,6 @@ namespace BookBoard.Models
         [StringLength(250)]
         public string Description { get; set; } = string.Empty;
 
-        // Kept for the form input and simple display.
-        // The real tag system is BoardTags -> Tag.
         [StringLength(200)]
         public string MoodTags { get; set; } = string.Empty;
 
@@ -29,5 +29,19 @@ namespace BookBoard.Models
         public List<BoardBook> Books { get; set; } = new List<BoardBook>();
 
         public List<BoardTag> BoardTags { get; set; } = new List<BoardTag>();
+
+        public List<SavedBoard> SavedByUsers { get; set; } = new List<SavedBoard>();
+
+        [StringLength(50)]
+        public string Theme { get; set; } = "cozy";
+
+        [StringLength(30)]
+        public string AccentColor { get; set; } = "brown";
+
+        [StringLength(100)]
+        public string IconSymbols { get; set; } = "📚, ☕, ✨";
+
+        [StringLength(50)]
+        public string BackgroundStyle { get; set; } = "soft-glow";
     }
 }

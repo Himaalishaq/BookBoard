@@ -21,7 +21,13 @@ namespace BookBoard.Pages
 
         public ApplicationUser? CurrentUser { get; set; }
 
+        public string CurrentUserId { get; set; } = string.Empty;
+
         public List<Board> UserBoards { get; set; } = new List<Board>();
+
+        public List<Board> SavedBoards { get; set; } = new List<Board>();
+
+        public HashSet<int> SavedBoardIds { get; set; } = new HashSet<int>();
 
         public List<BoardBook> SavedBooks { get; set; } = new List<BoardBook>();
 
@@ -47,13 +53,33 @@ namespace BookBoard.Pages
                 return;
             }
 
+            CurrentUserId = userId;
             CurrentUser = await _userManager.GetUserAsync(User);
 
             UserBoards = await _context.Boards
                 .Include(board => board.Books)
+                .Include(board => board.VisualItems)
                 .Where(board => board.UserId == userId)
                 .OrderByDescending(board => board.CreatedAt)
                 .ToListAsync();
+
+            var savedBoardRows = await _context.SavedBoards
+                .Include(saved => saved.Board)
+                    .ThenInclude(board => board!.Books)
+                .Include(saved => saved.Board)
+                    .ThenInclude(board => board!.VisualItems)
+                .Where(saved => saved.UserId == userId && saved.Board != null)
+                .OrderByDescending(saved => saved.SavedAt)
+                .ToListAsync();
+
+            SavedBoards = savedBoardRows
+                .Where(saved => saved.Board != null)
+                .Select(saved => saved.Board!)
+                .ToList();
+
+            SavedBoardIds = SavedBoards
+                .Select(board => board.Id)
+                .ToHashSet();
 
             SavedBooks = UserBoards
                 .SelectMany(board => board.Books.Select(book =>

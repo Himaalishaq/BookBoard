@@ -1,0 +1,243 @@
+@page "{id:int}"
+@model BookBoard.Pages.CustomizeBoardModel
+@{
+    ViewData["Title"] = "Board Canvas Studio";
+    var booksWithCovers = Model.Board?.Books
+        .Where(b => !string.IsNullOrWhiteSpace(b.CoverUrl))
+        .ToList() ?? new List<BookBoard.Models.BoardBook>();
+}
+
+@if (Model.Board != null)
+{
+    <div class="customize-board-page">
+
+        <div class="section-heading text-center">
+            <p class="studio-eyebrow">Board Canvas Studio</p>
+            <h1>Design "@Model.Board.Title"</h1>
+            <p>Design the feeling of your board.</p>
+        </div>
+
+        <div style="display:none">
+            @Html.AntiForgeryToken()
+        </div>
+
+        <div class="studio-layout">
+
+            <div class="studio-add-panel">
+                <h2>Add Tile</h2>
+                <p>Pick a tile type, fill it in, then add it to your canvas.</p>
+
+                <form method="post" class="board-form studio-form">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <div class="tile-type-tabs">
+                        <input type="radio" asp-for="Input.ItemType" value="image" id="type-image" class="tile-type-radio" />
+                        <label for="type-image" class="tile-type-tab">
+                            <span class="tile-type-tab-icon">🖼️</span>
+                            <span>Image</span>
+                        </label>
+
+                        <input type="radio" asp-for="Input.ItemType" value="text" id="type-text" class="tile-type-radio" />
+                        <label for="type-text" class="tile-type-tab">
+                            <span class="tile-type-tab-icon">💬</span>
+                            <span>Quote</span>
+                        </label>
+
+                        <input type="radio" asp-for="Input.ItemType" value="icon" id="type-icon" class="tile-type-radio" />
+                        <label for="type-icon" class="tile-type-tab">
+                            <span class="tile-type-tab-icon">✨</span>
+                            <span>Symbol</span>
+                        </label>
+
+                        <input type="radio" asp-for="Input.ItemType" value="color" id="type-color" class="tile-type-radio" />
+                        <label for="type-color" class="tile-type-tab">
+                            <span class="tile-type-tab-icon">🎨</span>
+                            <span>Color</span>
+                        </label>
+
+                        @if (booksWithCovers.Count > 0)
+                        {
+                            <input type="radio" asp-for="Input.ItemType" value="bookcover" id="type-bookcover" class="tile-type-radio" />
+                            <label for="type-bookcover" class="tile-type-tab">
+                                <span class="tile-type-tab-icon">📖</span>
+                                <span>Book Cover</span>
+                            </label>
+                        }
+
+                        <div class="tile-panel" id="panel-image">
+                            <label for="ImageUrlValue">Image URL</label>
+                            <input type="text"
+                                   name="ImageUrlValue"
+                                   id="ImageUrlValue"
+                                   value="@Model.ImageUrlValue"
+                                   placeholder="Paste a Pinterest/Unsplash/image link" />
+                        </div>
+
+                        <div class="tile-panel" id="panel-text">
+                            <label for="QuoteValue">Quote</label>
+                            <textarea name="QuoteValue"
+                                      id="QuoteValue"
+                                      placeholder="Light after confusion.">@Model.QuoteValue</textarea>
+                        </div>
+
+                        <div class="tile-panel" id="panel-icon">
+                            <label for="SymbolValue">Symbol / Emoji</label>
+                            <input type="text"
+                                   name="SymbolValue"
+                                   id="SymbolValue"
+                                   value="@Model.SymbolValue"
+                                   placeholder="🌙 or ✨ or 🕯️" />
+                        </div>
+
+                        <div class="tile-panel" id="panel-color">
+                            <label for="ColorValue">Color</label>
+                            <input type="color"
+                                   name="ColorValue"
+                                   id="ColorValue"
+                                   value="@(string.IsNullOrWhiteSpace(Model.ColorValue) ? "#d9b46f" : Model.ColorValue)" />
+                        </div>
+
+                        @if (booksWithCovers.Count > 0)
+                        {
+                            <div class="tile-panel" id="panel-bookcover">
+                                <label asp-for="Input.BookCoverId">Choose a Book</label>
+                                <select asp-for="Input.BookCoverId">
+                                    <option value="">-- Select a book --</option>
+                                    @foreach (var book in booksWithCovers)
+                                    {
+                                        <option value="@book.Id">@book.Title</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Input.TileStyle">Tile Style</label>
+                        <select asp-for="Input.TileStyle">
+                            <option value="normal">Normal</option>
+                            <option value="wide">Wide</option>
+                            <option value="tall">Tall</option>
+                            <option value="soft">Soft</option>
+                            <option value="glow">Glow</option>
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary studio-add-btn">Add Tile</button>
+                </form>
+
+                <div class="canvas-help-box">
+                    <h3>Examples</h3>
+                    <p><strong>Image:</strong> Paste a Pinterest/Unsplash/image link.</p>
+                    <p><strong>Quote:</strong> Light after confusion.</p>
+                    <p><strong>Symbol:</strong> 🌙 or ✨ or 🕯️</p>
+                    <p><strong>Book Cover:</strong> Feature one of this board's own books.</p>
+                </div>
+            </div>
+
+            <div class="studio-preview-panel">
+                <div class="canvas-preview-header">
+                    <div>
+                        <h2>Live Board Preview</h2>
+                        <p>This is what people will see. Drag tiles to rearrange, or use the arrows on each tile.</p>
+                    </div>
+
+                    <div class="canvas-preview-header-actions">
+                        <span id="canvas-save-status" class="canvas-save-status"></span>
+                        <a asp-page="/BoardDetails" asp-route-id="@Model.Board.Id" class="btn btn-outline-secondary">
+                            Back to Board
+                        </a>
+                    </div>
+                </div>
+
+                @if (Model.Board.VisualItems.Count == 0)
+                {
+                    <div class="empty-state">
+                        <h3>No canvas items yet</h3>
+                        <p>Add your first image, quote, symbol, color, or book cover using the panel on the left.</p>
+                    </div>
+                }
+                else
+                {
+                    var orderedItems = Model.Board.VisualItems.OrderBy(item => item.SortOrder).ToList();
+
+                    <div class="board-canvas-grid" id="board-canvas-grid" data-board-id="@Model.Board.Id">
+                        @for (int i = 0; i < orderedItems.Count; i++)
+                        {
+                            var item = orderedItems[i];
+
+                            <div class="canvas-tile tile-@item.TileStyle item-@item.ItemType"
+                                 draggable="true"
+                                 data-item-id="@item.Id">
+
+                                <div class="canvas-tile-drag-handle" title="Drag to reorder">⠿</div>
+
+                                @if (item.ItemType == "image" || item.ItemType == "bookcover")
+                                {
+                                    <img src="@item.Content" alt="Board aesthetic image" draggable="false" />
+                                }
+                                else if (item.ItemType == "text")
+                                {
+                                    <div class="canvas-text-tile">
+                                        "@item.Content"
+                                    </div>
+                                }
+                                else if (item.ItemType == "icon")
+                                {
+                                    <div class="canvas-icon-tile">
+                                        @item.Content
+                                    </div>
+                                }
+                                else if (item.ItemType == "color")
+                                {
+                                    <div class="canvas-color-tile" style="background-color: @item.Content;">
+                                        <span>@item.Content</span>
+                                    </div>
+                                }
+
+                                <div class="tile-controls">
+                                    <form method="post"
+                                          asp-page-handler="Move"
+                                          asp-route-id="@Model.Board.Id"
+                                          asp-route-itemId="@item.Id"
+                                          asp-route-direction="up"
+                                          class="tile-control-form">
+                                        <button type="submit"
+                                                title="Move up"
+                                                disabled="@(i == 0)">↑</button>
+                                    </form>
+
+                                    <form method="post"
+                                          asp-page-handler="Move"
+                                          asp-route-id="@Model.Board.Id"
+                                          asp-route-itemId="@item.Id"
+                                          asp-route-direction="down"
+                                          class="tile-control-form">
+                                        <button type="submit"
+                                                title="Move down"
+                                                disabled="@(i == orderedItems.Count - 1)">↓</button>
+                                    </form>
+
+                                    <form method="post"
+                                          asp-page-handler="Delete"
+                                          asp-route-id="@Model.Board.Id"
+                                          asp-route-itemId="@item.Id"
+                                          class="tile-control-form">
+                                        <button type="submit" title="Delete" class="tile-control-delete">×</button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/canvas-editor.js"></script>
+}

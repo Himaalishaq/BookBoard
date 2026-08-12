@@ -3,6 +3,7 @@ using System;
 using BookBoard.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookBoard.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260801011207_AddBoardVisualItems")]
+    partial class AddBoardVisualItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -261,24 +264,6 @@ namespace BookBoard.Migrations
                     b.ToTable("BookTags");
                 });
 
-            modelBuilder.Entity("BookBoard.Models.SavedBoard", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("BoardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("SavedAt")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "BoardId");
-
-                    b.HasIndex("BoardId");
-
-                    b.ToTable("SavedBoards");
-                });
-
             modelBuilder.Entity("BookBoard.Models.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -504,25 +489,6 @@ namespace BookBoard.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("BookBoard.Models.SavedBoard", b =>
-                {
-                    b.HasOne("BookBoard.Models.Board", "Board")
-                        .WithMany("SavedByUsers")
-                        .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookBoard.Models.ApplicationUser", "User")
-                        .WithMany("SavedBoards")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Board");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -574,18 +540,11 @@ namespace BookBoard.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookBoard.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("SavedBoards");
-                });
-
             modelBuilder.Entity("BookBoard.Models.Board", b =>
                 {
                     b.Navigation("BoardTags");
 
                     b.Navigation("Books");
-
-                    b.Navigation("SavedByUsers");
 
                     b.Navigation("VisualItems");
                 });

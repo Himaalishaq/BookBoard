@@ -3,6 +3,7 @@ using System;
 using BookBoard.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookBoard.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260801001612_AddBoardAestheticFields")]
+    partial class AddBoardAestheticFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -209,43 +212,6 @@ namespace BookBoard.Migrations
                     b.ToTable("BoardTags");
                 });
 
-            modelBuilder.Entity("BookBoard.Models.BoardVisualItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("BoardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(700)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ItemType")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("TileStyle")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BoardId");
-
-                    b.ToTable("BoardVisualItems");
-                });
-
             modelBuilder.Entity("BookBoard.Models.BookTag", b =>
                 {
                     b.Property<int>("BoardBookId")
@@ -259,24 +225,6 @@ namespace BookBoard.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("BookTags");
-                });
-
-            modelBuilder.Entity("BookBoard.Models.SavedBoard", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("BoardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("SavedAt")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "BoardId");
-
-                    b.HasIndex("BoardId");
-
-                    b.ToTable("SavedBoards");
                 });
 
             modelBuilder.Entity("BookBoard.Models.Tag", b =>
@@ -474,17 +422,6 @@ namespace BookBoard.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("BookBoard.Models.BoardVisualItem", b =>
-                {
-                    b.HasOne("BookBoard.Models.Board", "Board")
-                        .WithMany("VisualItems")
-                        .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Board");
-                });
-
             modelBuilder.Entity("BookBoard.Models.BookTag", b =>
                 {
                     b.HasOne("BookBoard.Models.BoardBook", "BoardBook")
@@ -502,25 +439,6 @@ namespace BookBoard.Migrations
                     b.Navigation("BoardBook");
 
                     b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("BookBoard.Models.SavedBoard", b =>
-                {
-                    b.HasOne("BookBoard.Models.Board", "Board")
-                        .WithMany("SavedByUsers")
-                        .HasForeignKey("BoardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BookBoard.Models.ApplicationUser", "User")
-                        .WithMany("SavedBoards")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Board");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -574,20 +492,11 @@ namespace BookBoard.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BookBoard.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("SavedBoards");
-                });
-
             modelBuilder.Entity("BookBoard.Models.Board", b =>
                 {
                     b.Navigation("BoardTags");
 
                     b.Navigation("Books");
-
-                    b.Navigation("SavedByUsers");
-
-                    b.Navigation("VisualItems");
                 });
 
             modelBuilder.Entity("BookBoard.Models.BoardBook", b =>

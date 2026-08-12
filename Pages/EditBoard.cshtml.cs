@@ -70,6 +70,11 @@ namespace BookBoard.Pages
             boardToUpdate.MoodTags = Board.MoodTags;
             boardToUpdate.IsPublic = Board.IsPublic;
 
+            boardToUpdate.Theme = Board.Theme;
+            boardToUpdate.BackgroundStyle = Board.BackgroundStyle;
+            boardToUpdate.AccentColor = Board.AccentColor;
+            boardToUpdate.IconSymbols = Board.IconSymbols;
+
             await _tagService.SyncBoardTagsAsync(boardToUpdate.Id, rawTags);
             await _context.SaveChangesAsync();
 
