@@ -65,7 +65,6 @@
         }
     }
 
-    // Fill anything still empty with mood-tag words, then cycle through theme icons.
     // Fill anything still empty with mood-tag words, then either theme icons
     // (only if the board truly has no photos yet) or soft accent color tiles
     // (if photos already exist, so emoji never compete with real images).
@@ -179,7 +178,7 @@
                     else if (cell.Type == "image")
                     {
                         <div class="cover-tile collage-slot-@cell.Slot">
-                            <img src="@cell.Content" alt="" />
+                            <img src="@BookBoard.Services.ImageProxyHelper.BuildUrl(cell.Content)" alt="" />
                         </div>
                     }
                     else if (cell.Type == "bookcover")

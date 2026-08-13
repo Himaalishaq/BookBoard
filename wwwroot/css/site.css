@@ -9,11 +9,6 @@
   --color-border: #ead9cc;
 }
 
-
-
-
-
-
 html {
   font-size: 14px;
 }
@@ -28,8 +23,8 @@ body {
   margin: 0;
   padding: 0;
   background: linear-gradient(to bottom, #f8f1eb, #f3e7dc);
-  color: #4b2e2e;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--color-text);
+  font-family: var(--font-body);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -542,12 +537,6 @@ a:hover {
   gap: 2rem;
 }
 
-.discover-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
 .discover-feed-section {
   margin-top: 1rem;
 }
@@ -614,6 +603,7 @@ a:hover {
   font-size: 0.72rem;
   opacity: 0.75;
 }
+
 .related-moods-row {
   display: flex;
   flex-wrap: wrap;
@@ -627,7 +617,6 @@ a:hover {
   padding-top: 1.5rem;
   border-top: 1px dashed #e0c9b5;
 }
-
 
 .mini-book-grid {
   display: grid;
@@ -1232,8 +1221,6 @@ a:hover {
   }
 }
 
-
-
 .logout-form {
   margin: 0;
   padding: 0;
@@ -1580,7 +1567,6 @@ a:hover {
 }
 
 /* Aesthetic board cards */
-/* Aesthetic board cards */
 
 .aesthetic-board-card {
   position: relative;
@@ -1763,6 +1749,7 @@ a:hover {
   width: 100%;
   height: 100%;
 }
+
 .cover-tile-bookcover {
   background: linear-gradient(135deg, #f3e7dc, #fff8f3);
   display: flex;
@@ -1779,6 +1766,7 @@ a:hover {
   border-radius: 4px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
 }
+
 .mini-collage-grid {
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr;
@@ -1912,6 +1900,7 @@ a:hover {
   margin-top: 0;
   background-color: rgba(255, 250, 246, 0.97);
 }
+
 .aesthetic-icons {
   position: relative;
   z-index: 2;
@@ -1967,8 +1956,6 @@ a:hover {
 
 /* Board details hero */
 
-
-
 .hero-icons span {
   width: 52px;
   height: 52px;
@@ -2000,8 +1987,6 @@ a:hover {
     radial-gradient(circle at top right, rgba(218, 181, 115, 0.35), transparent 35%),
     linear-gradient(135deg, #3f2d26, #6b4a36, #c7a77a);
 }
-
-
 
 .theme-rainy {
   background:
@@ -2087,9 +2072,7 @@ a:hover {
 }
 
 @media (max-width: 700px) {
-  
-
-.board-cover-collage.cover-size-short {
+  .board-cover-collage.cover-size-short {
     height: 110px;
   }
 
@@ -2101,6 +2084,7 @@ a:hover {
     height: 190px;
   }
 }
+
 .customize-board-page {
   margin-top: 2rem;
   margin-bottom: 4rem;
@@ -2273,6 +2257,103 @@ a:hover {
   margin-top: 0.6rem;
 }
 
+.image-url-preview {
+  margin-top: 0.6rem;
+  border-radius: 12px;
+  border: 1px dashed #d9bca8;
+  background-color: #fffdfb;
+  min-height: 110px;
+  max-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0.5rem;
+}
+
+.image-url-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: contain;
+  display: block;
+}
+
+.image-url-preview-hint {
+  color: #8a6a5a;
+  font-size: 0.8rem;
+  text-align: center;
+  line-height: 1.4;
+  padding: 0 0.5rem;
+}
+
+.field-hint {
+  color: #a08370;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.emoji-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.emoji-picker-btn {
+  border: 1px solid #ead9cc;
+  background-color: #fffaf6;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.emoji-picker-btn:hover {
+  background-color: #f2e3d8;
+  border-color: #d9bca8;
+  transform: translateY(-2px);
+}
+
+.drag-placement-hint {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  background-color: #f2e3d8;
+  color: #5f3929;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 12px;
+  padding: 0;
+  text-align: center;
+  transition: opacity 0.2s ease, max-height 0.2s ease, padding 0.2s ease;
+}
+
+.drag-placement-hint.visible {
+  opacity: 1;
+  max-height: 60px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.canvas-tile.drop-target-highlight {
+  box-shadow: 0 0 0 3px #a2674c;
+}
+
+.empty-state.drop-target-highlight {
+  border-color: #a2674c;
+  background-color: #f7e9dc;
+}
+
+#board-canvas-grid.drop-target-highlight {
+  outline: 3px dashed #a2674c;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
 .canvas-preview-section,
 .add-canvas-item-section {
   background-color: rgba(255, 250, 246, 0.97);
@@ -2289,6 +2370,25 @@ a:hover {
   gap: 1rem;
   margin-bottom: 1.4rem;
   align-items: flex-start;
+}
+
+.canvas-preview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.canvas-save-status {
+  font-size: 0.85rem;
+  color: #8a6a52;
+  min-width: 90px;
+  text-align: right;
+  transition: color 0.2s ease;
+}
+
+.canvas-save-status-error {
+  color: #a3402f;
+  font-weight: 600;
 }
 
 .canvas-preview-header h2,
@@ -2316,6 +2416,44 @@ a:hover {
   border: 1px solid #ead9cc;
   background-color: #fff8f3;
   box-shadow: 0 4px 12px rgba(122, 78, 56, 0.08);
+  cursor: grab;
+  transition: box-shadow 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
+}
+
+.canvas-tile:active {
+  cursor: grabbing;
+}
+
+.canvas-tile.dragging {
+  opacity: 0.4;
+}
+
+.canvas-tile.drag-over {
+  box-shadow: 0 0 0 3px #d9b46f, 0 4px 12px rgba(122, 78, 56, 0.08);
+  transform: scale(0.98);
+}
+
+.canvas-tile-drag-handle {
+  position: absolute;
+  top: 0.45rem;
+  left: 0.45rem;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background-color: rgba(80, 45, 35, 0.55);
+  color: #fff8f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.canvas-tile:hover .canvas-tile-drag-handle {
+  opacity: 1;
 }
 
 .canvas-tile img {
@@ -2444,21 +2582,6 @@ a:hover {
   background-color: rgba(163, 64, 47, 1) !important;
 }
 
-.delete-tile-form button {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  border: none;
-  background-color: rgba(80, 45, 35, 0.75);
-  color: white;
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
-.delete-tile-form button:hover {
-  background-color: rgba(80, 45, 35, 0.95);
-}
-
 .canvas-help-box {
   background-color: #fff8f3;
   border: 1px dashed #d7b8a3;
@@ -2486,6 +2609,11 @@ a:hover {
 
   .canvas-preview-header {
     flex-direction: column;
+  }
+
+  .canvas-preview-header-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 
@@ -2912,94 +3040,4 @@ a:hover {
 .similar-match-note span {
   color: #6b3f2a;
   font-weight: 700;
-}
-
-.canvas-tile {
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid #ead9cc;
-  background-color: #fff8f3;
-  box-shadow: 0 4px 12px rgba(122, 78, 56, 0.08);
-  cursor: grab;
-  transition: box-shadow 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
-}
-
-.canvas-tile:active {
-  cursor: grabbing;
-}
-
-.canvas-tile.dragging {
-  opacity: 0.4;
-}
-
-.canvas-tile.drag-over {
-  box-shadow: 0 0 0 3px #d9b46f, 0 4px 12px rgba(122, 78, 56, 0.08);
-  transform: scale(0.98);
-}
-
-.canvas-tile-drag-handle {
-  position: absolute;
-  top: 0.45rem;
-  left: 0.45rem;
-  z-index: 3;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background-color: rgba(80, 45, 35, 0.55);
-  color: #fff8f3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  pointer-events: none;
-}
-
-.canvas-tile:hover .canvas-tile-drag-handle {
-  opacity: 1;
-}
-
-.canvas-preview-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.4rem;
-  align-items: flex-start;
-}
-
-.canvas-preview-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-}
-
-.canvas-save-status {
-  font-size: 0.85rem;
-  color: #8a6a52;
-  min-width: 90px;
-  text-align: right;
-  transition: color 0.2s ease;
-}
-
-.canvas-save-status-error {
-  color: #a3402f;
-  font-weight: 600;
-}
-
-@media (max-width: 700px) {
-  .board-canvas-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 130px;
-  }
-
-  .canvas-preview-header {
-    flex-direction: column;
-  }
-
-  .canvas-preview-header-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
 }

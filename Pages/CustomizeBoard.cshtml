@@ -25,32 +25,34 @@
 
             <div class="studio-add-panel">
                 <h2>Add Tile</h2>
-                <p>Pick a tile type, fill it in, then add it to your canvas.</p>
+                <p>Pick a tile type, fill it in, then add it to your canvas — or drag a tile type straight onto the canvas to place it exactly where you want.</p>
 
                 <form method="post" class="board-form studio-form">
                     <div asp-validation-summary="All" class="text-danger"></div>
 
+                    <input type="hidden" asp-for="InsertBeforeItemId" id="InsertBeforeItemId" />
+
                     <div class="tile-type-tabs">
                         <input type="radio" asp-for="Input.ItemType" value="image" id="type-image" class="tile-type-radio" />
-                        <label for="type-image" class="tile-type-tab">
+                        <label for="type-image" class="tile-type-tab" draggable="true" data-tile-type="image">
                             <span class="tile-type-tab-icon">🖼️</span>
                             <span>Image</span>
                         </label>
 
                         <input type="radio" asp-for="Input.ItemType" value="text" id="type-text" class="tile-type-radio" />
-                        <label for="type-text" class="tile-type-tab">
+                        <label for="type-text" class="tile-type-tab" draggable="true" data-tile-type="text">
                             <span class="tile-type-tab-icon">💬</span>
                             <span>Quote</span>
                         </label>
 
                         <input type="radio" asp-for="Input.ItemType" value="icon" id="type-icon" class="tile-type-radio" />
-                        <label for="type-icon" class="tile-type-tab">
+                        <label for="type-icon" class="tile-type-tab" draggable="true" data-tile-type="icon">
                             <span class="tile-type-tab-icon">✨</span>
                             <span>Symbol</span>
                         </label>
 
                         <input type="radio" asp-for="Input.ItemType" value="color" id="type-color" class="tile-type-radio" />
-                        <label for="type-color" class="tile-type-tab">
+                        <label for="type-color" class="tile-type-tab" draggable="true" data-tile-type="color">
                             <span class="tile-type-tab-icon">🎨</span>
                             <span>Color</span>
                         </label>
@@ -58,7 +60,7 @@
                         @if (booksWithCovers.Count > 0)
                         {
                             <input type="radio" asp-for="Input.ItemType" value="bookcover" id="type-bookcover" class="tile-type-radio" />
-                            <label for="type-bookcover" class="tile-type-tab">
+                            <label for="type-bookcover" class="tile-type-tab" draggable="true" data-tile-type="bookcover">
                                 <span class="tile-type-tab-icon">📖</span>
                                 <span>Book Cover</span>
                             </label>
@@ -70,7 +72,18 @@
                                    name="ImageUrlValue"
                                    id="ImageUrlValue"
                                    value="@Model.ImageUrlValue"
-                                   placeholder="Paste a Pinterest/Unsplash/image link" />
+                                   placeholder="Paste any image link — doesn't need to be from Pinterest" />
+
+                            <div class="image-url-preview" id="image-url-preview">
+                                <span class="image-url-preview-hint">
+                                    Paste a link above to preview it here before adding.
+                                </span>
+                            </div>
+
+                            <p class="field-hint">
+                                Tip: right-click the actual picture (not the webpage) and choose
+                                "Copy image address" — works with Google Images, Unsplash, imgur, and most sites.
+                            </p>
                         </div>
 
                         <div class="tile-panel" id="panel-text">
@@ -86,7 +99,14 @@
                                    name="SymbolValue"
                                    id="SymbolValue"
                                    value="@Model.SymbolValue"
-                                   placeholder="🌙 or ✨ or 🕯️" />
+                                   placeholder="Type one, or pick below" />
+
+                            <div class="emoji-picker-grid">
+                                @foreach (var emoji in new[] { "🌙", "✨", "☕", "🕯️", "📖", "📚", "🍂", "🌧️", "☔", "🔥", "🌸", "🌊", "🖤", "💫", "🌌", "🍁", "🎀", "🧣", "🌿", "🦋", "⭐", "💭", "🌷", "🍯" })
+                                {
+                                    <button type="button" class="emoji-picker-btn" data-emoji="@emoji">@emoji</button>
+                                }
+                            </div>
                         </div>
 
                         <div class="tile-panel" id="panel-color">
@@ -152,11 +172,13 @@
                     </div>
                 </div>
 
+                <div id="drag-placement-hint" class="drag-placement-hint"></div>
+
                 @if (Model.Board.VisualItems.Count == 0)
                 {
-                    <div class="empty-state">
+                    <div class="empty-state" id="board-canvas-empty-dropzone">
                         <h3>No canvas items yet</h3>
-                        <p>Add your first image, quote, symbol, color, or book cover using the panel on the left.</p>
+                        <p>Add your first image, quote, symbol, color, or book cover using the panel on the left — or drag a tile type here.</p>
                     </div>
                 }
                 else
@@ -174,7 +196,11 @@
 
                                 <div class="canvas-tile-drag-handle" title="Drag to reorder">⠿</div>
 
-                                @if (item.ItemType == "image" || item.ItemType == "bookcover")
+                                @if (item.ItemType == "image")
+                                {
+                                    <img src="@BookBoard.Services.ImageProxyHelper.BuildUrl(item.Content)" alt="Board aesthetic image" draggable="false" />
+                                }
+                                else if (item.ItemType == "bookcover")
                                 {
                                     <img src="@item.Content" alt="Board aesthetic image" draggable="false" />
                                 }

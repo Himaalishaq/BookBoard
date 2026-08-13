@@ -26,6 +26,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
 builder.Services.AddHttpClient<OpenLibraryService>();
 builder.Services.AddScoped<TagService>();
+builder.Services.AddHttpClient();
 
 builder.Services.AddAntiforgery(options =>
 {
@@ -45,6 +46,51 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/image-proxy", async (string? url, IHttpClientFactory httpClientFactory) =>
+{
+    if (string.IsNullOrWhiteSpace(url) ||
+        !Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+        (uri.Scheme != "http" && uri.Scheme != "https"))
+    {
+        return Results.BadRequest("A valid image URL is required.");
+    }
+
+    var client = httpClientFactory.CreateClient();
+    client.Timeout = TimeSpan.FromSeconds(8);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd(
+        "Mozilla/5.0 (compatible; BookBoardImageProxy/1.0)");
+
+    try
+    {
+        using var response = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return Results.NotFound();
+        }
+
+        string? contentType = response.Content.Headers.ContentType?.MediaType;
+
+        if (string.IsNullOrWhiteSpace(contentType) || !contentType.StartsWith("image/"))
+        {
+            return Results.BadRequest("That link did not return an image.");
+        }
+
+        byte[] bytes = await response.Content.ReadAsByteArrayAsync();
+
+        if (bytes.Length > 8 * 1024 * 1024)
+        {
+            return Results.BadRequest("Image is too large.");
+        }
+
+        return Results.File(bytes, contentType);
+    }
+    catch
+    {
+        return Results.NotFound();
+    }
+});
 
 app.MapRazorPages();
 

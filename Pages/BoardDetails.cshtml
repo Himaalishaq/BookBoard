@@ -35,7 +35,11 @@
                     @foreach (var item in canvasItems)
                     {
                         <div class="canvas-tile tile-@item.TileStyle item-@item.ItemType">
-                            @if (item.ItemType == "image" || item.ItemType == "bookcover")
+                            @if (item.ItemType == "image")
+                            {
+                                <img src="@BookBoard.Services.ImageProxyHelper.BuildUrl(item.Content)" alt="Board aesthetic image" />
+                            }
+                            else if (item.ItemType == "bookcover")
                             {
                                 <img src="@item.Content" alt="Board aesthetic image" />
                             }

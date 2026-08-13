@@ -40,6 +40,9 @@ namespace BookBoard.Pages
         [BindProperty]
         public string? ColorValue { get; set; }
 
+        [BindProperty]
+        public int? InsertBeforeItemId { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int id)
         {
             var result = await LoadBoardAsync(id);
@@ -108,11 +111,30 @@ namespace BookBoard.Pages
                 content = content.Substring(0, 700);
             }
 
-            int nextSortOrder = 1;
+            int newSortOrder;
 
-            if (Board.VisualItems.Count > 0)
+            var insertBeforeTile = InsertBeforeItemId.HasValue
+                ? Board.VisualItems.FirstOrDefault(item => item.Id == InsertBeforeItemId.Value)
+                : null;
+
+            if (insertBeforeTile != null)
             {
-                nextSortOrder = Board.VisualItems.Max(item => item.SortOrder) + 1;
+                // Dragged onto a specific spot: take that tile's position, and
+                // shift it (and everything after it) one step later.
+                newSortOrder = insertBeforeTile.SortOrder;
+
+                foreach (var existingItem in Board.VisualItems.Where(item => item.SortOrder >= newSortOrder))
+                {
+                    existingItem.SortOrder++;
+                }
+            }
+            else
+            {
+                // No drop target (clicked "Add Tile" normally, or dropped past
+                // the last tile): append to the end, same as before.
+                newSortOrder = Board.VisualItems.Count > 0
+                    ? Board.VisualItems.Max(item => item.SortOrder) + 1
+                    : 1;
             }
 
             var visualItem = new BoardVisualItem
@@ -121,7 +143,7 @@ namespace BookBoard.Pages
                 ItemType = Input.ItemType,
                 Content = content,
                 TileStyle = Input.TileStyle,
-                SortOrder = nextSortOrder,
+                SortOrder = newSortOrder,
                 CreatedAt = DateTime.Now
             };
 
