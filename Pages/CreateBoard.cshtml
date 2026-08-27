@@ -36,38 +36,63 @@
 
             <div class="form-group">
                 <label asp-for="Board.Theme">Theme</label>
-                <select asp-for="Board.Theme">
-                    <option value="cozy">Cozy</option>
-                    <option value="spiritual">Spiritual</option>
-                    <option value="summer">Summer</option>
-                    <option value="dark-academia">Dark Academia</option>
-                    <option value="rainy">Rainy Day</option>
-                    <option value="fantasy">Fantasy</option>
-                </select>
+                <input asp-for="Board.Theme" list="theme-options" placeholder="Type your own, or pick a suggestion" />
+                <datalist id="theme-options">
+                    <option value="cozy" />
+                    <option value="spiritual" />
+                    <option value="summer" />
+                    <option value="dark-academia" />
+                    <option value="rainy" />
+                    <option value="fantasy" />
+                    <option value="autumn" />
+                    <option value="winter" />
+                    <option value="coastal" />
+                    <option value="gothic" />
+                    <option value="whimsical" />
+                    <option value="minimalist" />
+                </datalist>
+                <small>Pick a suggestion or type any theme name that fits your board.</small>
             </div>
 
             <div class="form-group">
                 <label asp-for="Board.BackgroundStyle">Background Style</label>
-                <select asp-for="Board.BackgroundStyle">
-                    <option value="soft-glow">Soft Glow</option>
-                    <option value="stars">Stars</option>
-                    <option value="sunlight">Sunlight</option>
-                    <option value="paper">Vintage Paper</option>
-                    <option value="rain">Rainy Glass</option>
-                    <option value="forest">Forest Mist</option>
-                </select>
+                <input asp-for="Board.BackgroundStyle" list="background-options" placeholder="Type your own, or pick a suggestion" />
+                <datalist id="background-options">
+                    <option value="soft-glow" />
+                    <option value="stars" />
+                    <option value="sunlight" />
+                    <option value="paper" />
+                    <option value="rain" />
+                    <option value="forest" />
+                    <option value="fog" />
+                    <option value="candlelight" />
+                    <option value="moonlight" />
+                    <option value="watercolor" />
+                </datalist>
+                <small>Pick a suggestion or type any background style.</small>
             </div>
 
             <div class="form-group">
                 <label asp-for="Board.AccentColor">Accent Color</label>
-                <select asp-for="Board.AccentColor">
-                    <option value="brown">Warm Brown</option>
-                    <option value="gold">Soft Gold</option>
-                    <option value="green">Forest Green</option>
-                    <option value="blue">Midnight Blue</option>
-                    <option value="lavender">Lavender</option>
-                    <option value="rose">Dusty Rose</option>
-                </select>
+                <div class="accent-swatch-picker">
+                    <input type="radio" asp-for="Board.AccentColor" value="brown" id="accent-brown" class="accent-swatch-radio" />
+                    <label for="accent-brown" class="accent-swatch" style="background: linear-gradient(135deg, #e6d2bf, #b98f6e);" title="Warm Brown"></label>
+
+                    <input type="radio" asp-for="Board.AccentColor" value="gold" id="accent-gold" class="accent-swatch-radio" />
+                    <label for="accent-gold" class="accent-swatch" style="background: linear-gradient(135deg, #f1dba6, #d9b46f);" title="Soft Gold"></label>
+
+                    <input type="radio" asp-for="Board.AccentColor" value="green" id="accent-green" class="accent-swatch-radio" />
+                    <label for="accent-green" class="accent-swatch" style="background: linear-gradient(135deg, #cfe3c1, #8aaa7b);" title="Forest Green"></label>
+
+                    <input type="radio" asp-for="Board.AccentColor" value="blue" id="accent-blue" class="accent-swatch-radio" />
+                    <label for="accent-blue" class="accent-swatch" style="background: linear-gradient(135deg, #cdd7ef, #899bc8);" title="Midnight Blue"></label>
+
+                    <input type="radio" asp-for="Board.AccentColor" value="lavender" id="accent-lavender" class="accent-swatch-radio" />
+                    <label for="accent-lavender" class="accent-swatch" style="background: linear-gradient(135deg, #e8dbf3, #bda6d9);" title="Lavender"></label>
+
+                    <input type="radio" asp-for="Board.AccentColor" value="rose" id="accent-rose" class="accent-swatch-radio" />
+                    <label for="accent-rose" class="accent-swatch" style="background: linear-gradient(135deg, #f2dcdc, #d8a1a1);" title="Dusty Rose"></label>
+                </div>
             </div>
 
             <div class="form-group">

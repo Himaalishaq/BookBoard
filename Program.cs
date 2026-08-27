@@ -1,13 +1,22 @@
 using BookBoard.Data;
 using BookBoard.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BookBoard.Services;
 using BookBoard.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+
+// With <Nullable>enable</Nullable> on, ASP.NET Core treats plain non-nullable
+// `string` properties (Description, ShortDescription, Reflection, etc.) as
+// implicitly required for validation, even without a [Required] attribute.
+// Turning this off lets those fields stay genuinely optional.
+builder.Services.Configure<MvcOptions>(options =>
+{
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));

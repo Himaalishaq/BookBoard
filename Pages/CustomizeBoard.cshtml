@@ -166,7 +166,7 @@
 
                     <div class="canvas-preview-header-actions">
                         <span id="canvas-save-status" class="canvas-save-status"></span>
-                        <a asp-page="/BoardDetails" asp-route-id="@Model.Board.Id" class="btn btn-outline-secondary">
+                        <a asp-page="/BoardDetails" asp-route-id="@Model.Board.Id" id="back-to-board-link" class="btn btn-outline-secondary">
                             Back to Board
                         </a>
                     </div>
@@ -218,9 +218,7 @@
                                 }
                                 else if (item.ItemType == "color")
                                 {
-                                    <div class="canvas-color-tile" style="background-color: @item.Content;">
-                                        <span>@item.Content</span>
-                                    </div>
+                                    <div class="canvas-color-tile" style="background-color: @item.Content;"></div>
                                 }
 
                                 <div class="tile-controls">

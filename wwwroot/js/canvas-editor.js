@@ -10,7 +10,7 @@
     const token = tokenInput ? tokenInput.value : "";
 
     // ------------------------------------------------------------------
-    // Feature 1: drag-to-reorder existing tiles (unchanged from before)
+    // Feature 1: drag-to-reorder existing tiles
     // ------------------------------------------------------------------
     (function setUpReorder() {
         const grid = document.getElementById("board-canvas-grid");
@@ -21,8 +21,10 @@
 
         const boardId = grid.dataset.boardId;
         const statusEl = document.getElementById("canvas-save-status");
+        const backLink = document.getElementById("back-to-board-link");
 
         let draggedTile = null;
+        let pendingSavePromise = Promise.resolve();
 
         function getTiles() {
             return Array.from(grid.querySelectorAll(".canvas-tile"));
@@ -101,7 +103,7 @@
             });
 
             draggedTile = null;
-            saveOrder();
+            pendingSavePromise = saveOrder();
         }
 
         async function saveOrder() {
@@ -142,6 +144,20 @@
         grid.addEventListener("dragover", handleDragOver);
         grid.addEventListener("drop", handleDrop);
         grid.addEventListener("dragend", handleDragEnd);
+
+        if (backLink) {
+            backLink.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                pendingSavePromise
+                    .catch(function () {
+                        // Even if the save failed, don't trap the user on this page.
+                    })
+                    .then(function () {
+                        window.location.href = backLink.href;
+                    });
+            });
+        }
     })();
 
     // ------------------------------------------------------------------

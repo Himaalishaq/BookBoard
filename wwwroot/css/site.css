@@ -936,7 +936,10 @@ a:hover {
 .real-book-cover {
   width: 100%;
   height: 240px;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #f3e7dc;
+  padding: 0.75rem;
+  box-sizing: border-box;
   border-bottom: 1px solid #ead9cc;
 }
 
@@ -3040,4 +3043,125 @@ a:hover {
 .similar-match-note span {
   color: #6b3f2a;
   font-weight: 700;
+}
+
+/* Identity pages (Login, Register, Manage account, etc.) — these use
+   Bootstrap's default markup rather than our own form classes, since they
+   come from the built-in Identity UI library. Styled generically here so
+   they feel like part of the site instead of a bare default page. */
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+.row > div {
+  flex: 1;
+  min-width: 260px;
+}
+
+.row h1,
+.row h2,
+.row h3,
+.row h4 {
+  color: #6b3f2a;
+}
+
+.row hr {
+  border-color: #ead9cc;
+  margin: 1rem 0 1.5rem;
+}
+
+.form-floating {
+  position: relative;
+  margin-bottom: 1.1rem;
+}
+
+.form-floating > .form-control {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #d9bca8;
+  border-radius: 12px;
+  background-color: #fffdfb;
+  font-size: 0.95rem;
+  color: #4b2e2e;
+}
+
+.form-floating > label {
+  position: absolute;
+  top: 0.9rem;
+  left: 1rem;
+  color: #a08370;
+  font-size: 0.85rem;
+  pointer-events: none;
+  transition: transform 0.15s ease, font-size 0.15s ease, top 0.15s ease;
+  background: transparent;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  top: 0.3rem;
+  font-size: 0.7rem;
+  color: #a2674c;
+}
+
+.form-floating > .form-control:focus {
+  outline: none;
+  border-color: #a2674c;
+  box-shadow: 0 0 0 3px rgba(162, 103, 76, 0.15);
+}
+
+.checkbox.mb-3 label {
+  color: #6f5246;
+  font-size: 0.9rem;
+}
+
+.validation-summary-errors ul,
+.text-danger ul {
+  list-style: none;
+  padding-left: 0;
+  color: #a3402f;
+}
+
+.accent-swatch-picker {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}
+
+.accent-swatch-radio {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.accent-swatch {
+  display: inline-block;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 3px solid transparent;
+  box-shadow: 0 2px 6px rgba(122, 78, 56, 0.15);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.accent-swatch:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.accent-swatch-radio:checked + .accent-swatch {
+  border-color: #4b2e2e;
+  transform: scale(1.08);
+}
+
+.accent-swatch-radio:focus-visible + .accent-swatch {
+  outline: 2px solid #a2674c;
+  outline-offset: 3px;
 }
