@@ -3030,6 +3030,11 @@ a:hover {
 
 .similar-board-result-card {
   position: relative;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  width: 100%;
 }
 
 .similar-match-note {
