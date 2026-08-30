@@ -167,6 +167,7 @@ namespace BookBoard.Services
             var boards = await boardsQuery
                 .Include(board => board.Books)
                 .Include(board => board.VisualItems)
+                .Include(board => board.User)
                 .OrderByDescending(board => board.Books.Count)
                 .ThenByDescending(board => board.CreatedAt)
                 .Skip((page - 1) * pageSize)
@@ -411,6 +412,7 @@ namespace BookBoard.Services
                 .Include(board => board.BoardTags)
                     .ThenInclude(boardTag => boardTag.Tag)
                 .Include(board => board.VisualItems)
+                .Include(board => board.User)
                 .Where(board => topIds.Contains(board.Id))
                 .ToListAsync(cancellationToken);
 
@@ -618,6 +620,7 @@ namespace BookBoard.Services
             return await _context.Boards
                 .Include(board => board.Books)
                 .Include(board => board.VisualItems)
+                .Include(board => board.User)
                 .Where(board => board.IsPublic && !exclude.Contains(board.Id))
                 .OrderByDescending(board => board.CreatedAt)
                 .Take(take)

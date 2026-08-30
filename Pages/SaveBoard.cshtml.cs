@@ -99,6 +99,7 @@ namespace BookBoard.Pages
             Board = await _context.Boards
                 .Include(board => board.Books)
                 .Include(board => board.VisualItems)
+                .Include(board => board.User)
                 .FirstOrDefaultAsync(board => board.Id == boardId);
 
             if (Board == null)

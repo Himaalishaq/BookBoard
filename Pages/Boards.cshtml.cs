@@ -34,6 +34,7 @@ namespace BookBoard.Pages
             Boards = await _context.Boards
                 .Include(board => board.Books)
                 .Include(board => board.VisualItems)
+                .Include(board => board.User)
                 .Where(board => board.UserId == userId)
                 .OrderByDescending(board => board.CreatedAt)
                 .ToListAsync();
