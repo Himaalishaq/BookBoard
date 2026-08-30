@@ -101,6 +101,23 @@ namespace BookBoard.Services
             return ParseTags(book.MoodTags);
         }
 
+        public static List<string> GetAllTagSlugs(Board board)
+        {
+            var slugs = new List<string>();
+
+            slugs.AddRange(GetBoardTagSlugs(board));
+
+            foreach (var book in board.Books)
+            {
+                slugs.AddRange(GetBookTagSlugs(book));
+            }
+
+            return slugs
+                .Where(slug => !string.IsNullOrWhiteSpace(slug))
+                .Distinct()
+                .ToList();
+        }
+
         public static List<string> ParseTags(string? rawTags)
         {
             if (string.IsNullOrWhiteSpace(rawTags))
@@ -118,6 +135,11 @@ namespace BookBoard.Services
 
         public static string ToDisplayName(string slug)
         {
+            if (string.IsNullOrWhiteSpace(slug))
+            {
+                return string.Empty;
+            }
+
             return string.Join(" ",
                 slug.Split('-', StringSplitOptions.RemoveEmptyEntries)
                     .Select(word => char.ToUpper(word[0]) + word.Substring(1)));

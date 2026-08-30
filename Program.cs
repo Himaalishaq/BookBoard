@@ -35,6 +35,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
 builder.Services.AddHttpClient<OpenLibraryService>();
 builder.Services.AddScoped<TagService>();
+builder.Services.AddScoped<BoardRecommendationService>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddAntiforgery(options =>

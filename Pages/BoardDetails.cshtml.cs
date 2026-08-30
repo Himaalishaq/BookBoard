@@ -12,11 +12,16 @@ namespace BookBoard.Pages
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly BoardRecommendationService _recommendations;
 
-        public BoardDetailsModel(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public BoardDetailsModel(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            BoardRecommendationService recommendations)
         {
             _context = context;
             _userManager = userManager;
+            _recommendations = recommendations;
         }
 
         public Board? Board { get; set; }
@@ -29,7 +34,13 @@ namespace BookBoard.Pages
 
         public List<BookRecommendation> Recommendations { get; set; } = new List<BookRecommendation>();
 
+        public List<BoardMatch> SimilarBoards { get; set; } = new List<BoardMatch>();
+
         public List<MoodStat> BoardDna { get; set; } = new List<MoodStat>();
+
+        public string CurrentUserId { get; set; } = string.Empty;
+
+        public HashSet<int> SavedBoardIds { get; set; } = new HashSet<int>();
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -49,6 +60,7 @@ namespace BookBoard.Pages
             }
 
             string? userId = _userManager.GetUserId(User);
+            CurrentUserId = userId ?? string.Empty;
 
             IsOwner = !string.IsNullOrWhiteSpace(userId) && Board.UserId == userId;
 
@@ -65,8 +77,19 @@ namespace BookBoard.Pages
                     saved.UserId == userId &&
                     saved.BoardId == Board.Id);
 
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                SavedBoardIds = await _context.SavedBoards
+                    .Where(saved => saved.UserId == userId)
+                    .Select(saved => saved.BoardId)
+                    .ToHashSetAsync();
+            }
+
             LoadBoardDna(Board);
             await LoadRecommendationsAsync(Board);
+
+            var similar = await _recommendations.GetSimilarAsync(Board.Id, userId);
+            SimilarBoards = similar.Matches;
 
             return Page();
         }

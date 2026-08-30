@@ -3045,6 +3045,84 @@ a:hover {
   font-weight: 700;
 }
 
+.similar-to-picker {
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.similar-to-picker label {
+  color: #6b3f2a;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.similar-to-picker select {
+  min-width: 220px;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #d9bca8;
+  border-radius: 999px;
+  background-color: #fffaf6;
+  color: #6b3f2a;
+}
+
+.recommendation-reason {
+  color: #7b5b4b;
+  margin: -0.6rem 0 1.2rem;
+}
+
+.similar-boards-section,
+.recommendations-section {
+  margin-top: 3rem;
+}
+
+.discover-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 1.8rem 0 0.4rem;
+}
+
+.discover-pager-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #d9bca8;
+  background-color: #fffaf6;
+  color: #7a4e38;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.discover-pager-link:hover {
+  background-color: #f2e3d8;
+  color: #5f3929;
+  text-decoration: none;
+}
+
+.discover-pager-link.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.discover-pager-status {
+  color: #6b3f2a;
+  font-weight: 600;
+}
+
+.discover-pager-count {
+  color: #8a6a5a;
+  font-weight: 500;
+}
+
 /* Identity pages (Login, Register, Manage account, etc.) — these use
    Bootstrap's default markup rather than our own form classes, since they
    come from the built-in Identity UI library. Styled generically here so

@@ -1,0 +1,43 @@
+@model BookBoard.Pages.DiscoverModel
+
+@if (Model.TotalBoardPages > 1)
+{
+    <nav class="discover-pager" aria-label="Discover pages">
+        @if (Model.PageNumber > 1)
+        {
+            <a asp-page="/Discover"
+               asp-route-query="@(Model.HasSearched ? Model.SearchQuery : null)"
+               asp-route-mood="@(Model.HasSelectedMood ? Model.SelectedMood : null)"
+               asp-route-similarToBoardId="@Model.SimilarToBoardId"
+               asp-route-page="@(Model.PageNumber - 1)"
+               class="discover-pager-link">
+                Previous
+            </a>
+        }
+        else
+        {
+            <span class="discover-pager-link is-disabled">Previous</span>
+        }
+
+        <span class="discover-pager-status">
+            Page @Model.PageNumber of @Model.TotalBoardPages
+            <span class="discover-pager-count">(@Model.TotalMatchingBoards boards)</span>
+        </span>
+
+        @if (Model.PageNumber < Model.TotalBoardPages)
+        {
+            <a asp-page="/Discover"
+               asp-route-query="@(Model.HasSearched ? Model.SearchQuery : null)"
+               asp-route-mood="@(Model.HasSelectedMood ? Model.SelectedMood : null)"
+               asp-route-similarToBoardId="@Model.SimilarToBoardId"
+               asp-route-page="@(Model.PageNumber + 1)"
+               class="discover-pager-link">
+                Next
+            </a>
+        }
+        else
+        {
+            <span class="discover-pager-link is-disabled">Next</span>
+        }
+    </nav>
+}

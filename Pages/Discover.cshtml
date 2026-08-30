@@ -1,5 +1,6 @@
 @page
 @model BookBoard.Pages.DiscoverModel
+@using BookBoard.Services
 @{
     ViewData["Title"] = "Discover";
     ViewData["CurrentUserId"] = Model.CurrentUserId;
@@ -30,8 +31,8 @@
             @foreach (var mood in Model.PopularMoods)
             {
                 <a asp-page="/Discover"
-                   asp-route-mood="@mood.Mood"
-                   class="mood-chip @(Model.SelectedMood == mood.Mood ? "active" : "")">
+                   asp-route-mood="@mood.Slug"
+                   class="mood-chip @(Model.SelectedMoodSlug == mood.Slug ? "active" : "")">
                     @mood.Mood
                     <span class="mood-chip-count">@mood.Count</span>
                 </a>
@@ -39,7 +40,33 @@
         </div>
     }
 
-    @if (Model.SimilarToBoardId.HasValue)
+    @if (Model.BoardOptions.Count > 0)
+    {
+        <form method="get" class="similar-to-picker">
+            @if (Model.HasSearched)
+            {
+                <input type="hidden" name="query" value="@Model.SearchQuery" />
+            }
+
+            @if (Model.HasSelectedMood)
+            {
+                <input type="hidden" name="mood" value="@Model.SelectedMood" />
+            }
+
+            <label for="similarToBoardId">More like one of your boards</label>
+            <select id="similarToBoardId" name="similarToBoardId" onchange="this.form.submit()">
+                <option value="">Choose a board...</option>
+                @foreach (var option in Model.BoardOptions)
+                {
+                    <option value="@option.Id" selected="@(Model.SimilarToBoardId == option.Id)">
+                        @option.Title
+                    </option>
+                }
+            </select>
+        </form>
+    }
+
+    @if (Model.SimilarToBoardId.HasValue && !string.IsNullOrWhiteSpace(Model.SimilarBoardTitle))
     {
         <div class="discover-feed-section">
             <h3 class="feed-label">Similar to "@Model.SimilarBoardTitle"</h3>
@@ -90,7 +117,7 @@
 
                     @foreach (var mood in Model.SimilarMoods)
                     {
-                        <a asp-page="/Discover" asp-route-mood="@mood" class="mood-chip">@mood</a>
+                        <a asp-page="/Discover" asp-route-mood="@mood" class="mood-chip">@TagService.ToDisplayName(mood)</a>
                     }
                 </div>
             }
@@ -109,6 +136,8 @@
                         <partial name="_BoardAestheticCard" model="board" />
                     }
                 </div>
+
+                <partial name="_DiscoverPager" model="Model" />
             }
 
             @if (Model.MatchingBooks.Count > 0)
@@ -203,7 +232,7 @@
 
                     @foreach (var tag in Model.SuggestedTags)
                     {
-                        <a asp-page="/Discover" asp-route-mood="@tag" class="mood-chip">@tag</a>
+                        <a asp-page="/Discover" asp-route-mood="@tag" class="mood-chip">@TagService.ToDisplayName(tag)</a>
                     }
                 </div>
             }
@@ -212,7 +241,7 @@
     else if (Model.HasSelectedMood)
     {
         <div class="discover-feed-section">
-            <h3 class="feed-label">Boards for "@Model.SelectedMood"</h3>
+            <h3 class="feed-label">Boards for "@TagService.ToDisplayName(Model.SelectedMoodSlug ?? Model.SelectedMood)"</h3>
 
             @if (Model.MoodBoards.Count == 0)
             {
@@ -226,13 +255,25 @@
                         <partial name="_BoardAestheticCard" model="board" />
                     }
                 </div>
+
+                <partial name="_DiscoverPager" model="Model" />
             }
         </div>
     }
     else
     {
         <div class="discover-feed-section">
-            <h3 class="feed-label">Recommended boards</h3>
+            <h3 class="feed-label">
+                @(Model.RecommendationsArePersonalized ? "Recommended for you" : "Newest public boards")
+            </h3>
+
+            @if (Model.RecommendationsArePersonalized && Model.TasteTags.Count > 0)
+            {
+                <p class="recommendation-reason">
+                    Based on your boards and saved inspiration:
+                    @string.Join(", ", Model.TasteTags)
+                </p>
+            }
 
             @if (Model.RecommendedBoards.Count == 0)
             {

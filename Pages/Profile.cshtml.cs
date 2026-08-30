@@ -1,5 +1,6 @@
 using BookBoard.Data;
 using BookBoard.Models;
+using BookBoard.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -29,7 +30,7 @@ namespace BookBoard.Pages
 
         public HashSet<int> SavedBoardIds { get; set; } = new HashSet<int>();
 
-        public List<BoardBook> SavedBooks { get; set; } = new List<BoardBook>();
+        public List<BoardBook> YourBooks { get; set; } = new List<BoardBook>();
 
         public List<ProfileMoodStat> FavoriteMoods { get; set; } = new List<ProfileMoodStat>();
 
@@ -81,7 +82,7 @@ namespace BookBoard.Pages
                 .Select(board => board.Id)
                 .ToHashSet();
 
-            SavedBooks = UserBoards
+            YourBooks = UserBoards
                 .SelectMany(board => board.Books.Select(book =>
                 {
                     book.Board = board;
@@ -104,19 +105,14 @@ namespace BookBoard.Pages
 
             foreach (var board in UserBoards)
             {
-                allTags.AddRange(ParseTags(board.MoodTags));
-
-                foreach (var book in board.Books)
-                {
-                    allTags.AddRange(ParseTags(book.MoodTags));
-                }
+                allTags.AddRange(TagService.GetAllTagSlugs(board));
             }
 
             FavoriteMoods = allTags
                 .GroupBy(tag => tag)
                 .Select(group => new ProfileMoodStat
                 {
-                    Mood = group.Key,
+                    Mood = TagService.ToDisplayName(group.Key),
                     Count = group.Count()
                 })
                 .OrderByDescending(mood => mood.Count)
@@ -128,13 +124,20 @@ namespace BookBoard.Pages
         private void BuildTasteProfile()
         {
             var topMoods = FavoriteMoods
-                .Select(mood => mood.Mood)
+                .Select(mood => mood.Mood.ToLowerInvariant())
                 .ToList();
 
             bool HasMood(params string[] moods)
             {
                 return topMoods.Any(topMood =>
-                    moods.Any(mood => topMood.Contains(mood)));
+                    moods.Any(mood =>
+                    {
+                        string needle = mood.ToLowerInvariant();
+                        string slug = TagService.ParseTags(mood).FirstOrDefault() ?? needle;
+                        return topMood.Contains(needle) ||
+                            topMood.Contains(slug) ||
+                            topMood.Contains(TagService.ToDisplayName(slug).ToLowerInvariant());
+                    }));
             }
 
             if (HasMood("spiritual", "religious", "faith", "healing", "awakening"))
@@ -187,14 +190,14 @@ namespace BookBoard.Pages
                     BoardId = board.Id
                 });
 
-            var bookActivities = SavedBooks
+            var bookActivities = YourBooks
                 .Select(book => new ProfileActivityItem
                 {
                     Type = "Book",
                     Title = book.Title,
                     Description = book.Board != null
-                        ? $"Saved to {book.Board.Title}."
-                        : "Saved a book.",
+                        ? $"Added to {book.Board.Title}."
+                        : "Added a book.",
                     CreatedAt = book.CreatedAt,
                     BoardId = book.BoardId
                 });
@@ -206,20 +209,6 @@ namespace BookBoard.Pages
                 .ToList();
         }
 
-        private static List<string> ParseTags(string? tags)
-        {
-            if (string.IsNullOrWhiteSpace(tags))
-            {
-                return new List<string>();
-            }
-
-            return tags
-                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                .Select(tag => tag.ToLower())
-                .Where(tag => !string.IsNullOrWhiteSpace(tag))
-                .Distinct()
-                .ToList();
-        }
     }
 
     public class ProfileMoodStat

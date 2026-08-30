@@ -48,8 +48,8 @@
 
     <div class="profile-stats">
         <div class="stat-card">
-            <h3>@Model.SavedBooks.Count</h3>
-            <p>Saved Books</p>
+            <h3>@Model.YourBooks.Count</h3>
+            <p>Books on Your Boards</p>
         </div>
 
         <div class="stat-card">
@@ -187,19 +187,26 @@
             </div>
         }
     </div>
-        <h2>Recently saved books</h2>
 
-        @if (Model.SavedBooks.Count == 0)
+    <div class="profile-section">
+        <div class="profile-section-header">
+            <div>
+                <h2>Books on your boards</h2>
+                <p>Titles you have added to the reading spaces you created.</p>
+            </div>
+        </div>
+
+        @if (Model.YourBooks.Count == 0)
         {
             <div class="empty-state">
-                <h3>No saved books yet</h3>
+                <h3>No books yet</h3>
                 <p>Add books to your boards to see them here.</p>
             </div>
         }
         else
         {
             <div class="book-grid">
-                @foreach (var book in Model.SavedBooks.Take(6))
+                @foreach (var book in Model.YourBooks.Take(6))
                 {
                     <div class="book-card">
                         @if (!string.IsNullOrWhiteSpace(book.CoverUrl))
@@ -222,7 +229,7 @@
                             @if (book.Board != null)
                             {
                                 <p class="book-location">
-                                    Saved in
+                                    On
                                     <a asp-page="/BoardDetails" asp-route-id="@book.Board.Id">
                                         @book.Board.Title
                                     </a>
