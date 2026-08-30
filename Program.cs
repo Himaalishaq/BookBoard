@@ -1,9 +1,11 @@
 using BookBoard.Data;
 using BookBoard.Models;
+using BookBoard.Services;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BookBoard.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +20,29 @@ builder.Services.Configure<MvcOptions>(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
 
+var database = DatabaseOptions.Resolve(builder.Configuration);
+builder.Services.AddSingleton(database);
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (database.IsPostgreSql)
+    {
+        options.UseNpgsql(database.ConnectionString);
+    }
+    else
+    {
+        options.UseSqlite(database.ConnectionString);
+    }
+});
+
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<ApplicationDbContext>()
+    .SetApplicationName("BookBoard");
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
+    options.User.RequireUniqueEmail = true;
 
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
@@ -32,6 +51,26 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.Password.RequiredLength = 6;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+    options.LogoutPath = "/Identity/Account/Logout";
+    options.AccessDeniedPath = "/Identity/Account/Login";
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+    options.SlidingExpiration = true;
+    options.Cookie.Name = "BookBoard.Auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 builder.Services.AddHttpClient<OpenLibraryService>();
 builder.Services.AddScoped<TagService>();
@@ -44,11 +83,26 @@ builder.Services.AddAntiforgery(options =>
 });
 
 var app = builder.Build();
+
+Directory.CreateDirectory(database.DataDirectory);
+
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
+    if (database.IsPostgreSql)
+    {
+        // Historical migrations were generated for SQLite column types.
+        // Postgres gets the current model on first boot; later deploys keep
+        // the existing schema so accounts and boards survive.
+        context.Database.EnsureCreated();
+    }
+    else
+    {
+        context.Database.Migrate();
+    }
 }
+
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -110,3 +164,7 @@ app.MapGet("/image-proxy", async (string? url, IHttpClientFactory httpClientFact
 app.MapRazorPages();
 
 app.Run();
+
+public partial class Program
+{
+}

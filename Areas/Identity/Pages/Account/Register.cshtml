@@ -1,0 +1,60 @@
+@page
+@model BookBoard.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Create account";
+}
+
+<div class="auth-page">
+    <section class="auth-card">
+        <div class="auth-intro">
+            <span class="home-kicker">Join BookBoard</span>
+            <h1>Create an account that keeps your boards.</h1>
+            <p>
+                Boards you make, books you save, and inspiration you collect are stored
+                on your account — not just in this browser.
+            </p>
+        </div>
+
+        <form id="registerForm" method="post" class="auth-form" asp-route-returnUrl="@Model.ReturnUrl">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Input.DisplayName">Display name</label>
+                <input asp-for="Input.DisplayName" autocomplete="nickname" placeholder="How your name appears on boards" />
+                <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.Email">Email</label>
+                <input asp-for="Input.Email" autocomplete="username" placeholder="you@email.com" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.Password">Password</label>
+                <input asp-for="Input.Password" autocomplete="new-password" placeholder="At least 6 characters" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.ConfirmPassword">Confirm password</label>
+                <input asp-for="Input.ConfirmPassword" autocomplete="new-password" placeholder="Type it again" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create account</button>
+            </div>
+
+            <p class="auth-switch">
+                Already have an account?
+                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Log in</a>
+            </p>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}
