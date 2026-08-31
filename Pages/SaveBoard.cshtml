@@ -2,6 +2,10 @@
 @model BookBoard.Pages.SaveBoardModel
 @{
     ViewData["Title"] = "Save to Inspiration";
+    ViewData["CurrentUserId"] = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+    ViewData["SavedBoardIds"] = Model.IsSaved && Model.Board != null
+        ? new HashSet<int> { Model.Board.Id }
+        : new HashSet<int>();
 }
 
 @if (Model.Board != null)
