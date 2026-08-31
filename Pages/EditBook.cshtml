@@ -34,6 +34,16 @@
         </div>
 
         <div class="form-group">
+            <label asp-for="BoardBook.PublishedYear">Published Year</label>
+            <input asp-for="BoardBook.PublishedYear" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="BoardBook.ShortDescription">Book Description</label>
+            <textarea asp-for="BoardBook.ShortDescription"></textarea>
+        </div>
+
+        <div class="form-group">
             <label asp-for="BoardBook.MoodTags">Mood / Vibe Tags</label>
             <input asp-for="BoardBook.MoodTags" />
             <small>Separate tags with commas.</small>

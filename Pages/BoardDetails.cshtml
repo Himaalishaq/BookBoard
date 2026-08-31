@@ -2,6 +2,8 @@
 @model BookBoard.Pages.BoardDetailsModel
 @{
     ViewData["Title"] = Model.Board?.Title ?? "Board Details";
+    ViewData["CurrentUserId"] = Model.CurrentUserId;
+    ViewData["SavedBoardIds"] = Model.SavedBoardIds;
 }
 
 @if (Model.Board != null)
@@ -126,6 +128,10 @@
                     <a asp-page="/AddBook" asp-route-boardId="@Model.Board.Id" class="btn btn-primary">
                         Add Book
                     </a>
+
+                    <a asp-page="/Discover" asp-route-similarToBoardId="@Model.Board.Id" class="btn btn-outline-secondary">
+                        More like this
+                    </a>
                 }
                 else
                 {
@@ -154,6 +160,10 @@
                             Login to Save
                         </a>
                     }
+
+                    <a asp-page="/Discover" asp-route-similarToBoardId="@Model.Board.Id" class="btn btn-outline-secondary">
+                        More like this
+                    </a>
                 }
 
                 @if (Model.SavedCount > 0)
@@ -377,6 +387,49 @@
                         <div class="reflection-card">
                             <p>“@book.Reflection”</p>
                             <span>@book.Title</span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="similar-boards-section">
+            <div class="section-heading text-center">
+                <h2>More boards like this</h2>
+                <p>Public boards that share this collection’s mood tags and reading vibe.</p>
+            </div>
+
+            @if (Model.SimilarBoards.Count == 0)
+            {
+                <div class="empty-state">
+                    <h3>No similar boards yet</h3>
+                    <p>
+                        Add more mood tags, or explore public boards so BookBoard can find collections with a matching vibe.
+                    </p>
+                    <a asp-page="/Discover" class="btn btn-outline-secondary">Explore Discover</a>
+                </div>
+            }
+            else
+            {
+                <div class="boards-grid">
+                    @foreach (var match in Model.SimilarBoards)
+                    {
+                        <div class="similar-board-result-card">
+                            <partial name="_BoardAestheticCard" model="match.Board" />
+
+                            <div class="similar-match-note">
+                                <span>@match.Score shared vibe(s)</span>
+
+                                @if (match.MatchedTags.Count > 0)
+                                {
+                                    <div class="small-tag-row">
+                                        @foreach (var tag in match.MatchedTags)
+                                        {
+                                            <span class="small-tag">@tag</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
                         </div>
                     }
                 </div>
