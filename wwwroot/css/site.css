@@ -3024,6 +3024,107 @@ a:hover {
   font-weight: 500;
 }
 
+.auth-page {
+  margin: 1.5rem auto 4rem;
+  max-width: 920px;
+}
+
+.auth-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: center;
+  background:
+    radial-gradient(circle at top right, rgba(255, 226, 178, 0.55), transparent 34%),
+    linear-gradient(135deg, #fff8f3, #f3dfcf);
+  border: 1px solid #ead9cc;
+  border-radius: 32px;
+  padding: 2.6rem;
+  box-shadow: 0 14px 40px rgba(122, 78, 56, 0.12);
+}
+
+.auth-intro h1 {
+  color: #5f3929;
+  font-size: 2.2rem;
+  line-height: 1.15;
+  margin: 0 0 0.9rem;
+}
+
+.auth-intro p {
+  color: #6f5246;
+  line-height: 1.65;
+  margin-bottom: 0;
+}
+
+.auth-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.auth-form label {
+  display: block;
+  color: #6b3f2a;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+  width: 100%;
+  border: 1px solid #d9bca8;
+  border-radius: 16px;
+  background-color: #fffdfb;
+  color: #4b2e2e;
+  padding: 0.85rem 1rem;
+  outline: none;
+}
+
+.auth-form input:focus {
+  border-color: #a2674c;
+  box-shadow: 0 0 0 3px rgba(162, 103, 76, 0.15);
+}
+
+.auth-form .checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.4rem 0 1.1rem;
+  color: #6f5246;
+}
+
+.auth-form .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.auth-form .form-actions .btn {
+  min-width: 140px;
+}
+
+.auth-switch {
+  margin: 1.2rem 0 0;
+  color: #7b5b4b;
+}
+
+.auth-switch a {
+  color: #a2674c;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (max-width: 800px) {
+  .auth-card {
+    grid-template-columns: 1fr;
+    padding: 1.8rem;
+    border-radius: 24px;
+  }
+
+  .auth-intro h1 {
+    font-size: 1.8rem;
+  }
+}
+
 /* Identity pages (Login, Register, Manage account, etc.) — these use
    Bootstrap's default markup rather than our own form classes, since they
    come from the built-in Identity UI library. Styled generically here so

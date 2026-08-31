@@ -1,0 +1,37 @@
+@page
+@model BookBoard.Areas.Identity.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = Model.LoggedOut ? "Logged out" : "Log out";
+}
+
+<div class="auth-page">
+    <section class="auth-card">
+        @if (Model.LoggedOut)
+        {
+            <div class="auth-intro">
+                <span class="home-kicker">Signed out</span>
+                <h1>You have been logged out.</h1>
+                <p>Your boards are still saved to your account. Come back anytime.</p>
+            </div>
+
+            <p class="auth-switch">
+                <a asp-page="/Index">Back to BookBoard</a>
+            </p>
+        }
+        else
+        {
+            <div class="auth-intro">
+                <span class="home-kicker">Leaving for now</span>
+                <h1>Log out of BookBoard?</h1>
+                <p>Your boards and saved inspiration stay with your account.</p>
+            </div>
+
+            <form method="post" class="auth-form">
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Log out</button>
+                    <a asp-page="/Index" class="btn btn-outline-secondary">Stay signed in</a>
+                </div>
+            </form>
+        }
+    </section>
+</div>
