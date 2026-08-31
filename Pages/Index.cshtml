@@ -2,6 +2,8 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home";
+    ViewData["CurrentUserId"] = Model.CurrentUserId;
+    ViewData["SavedBoardIds"] = Model.SavedBoardIds;
 }
 
 <div class="home-page">
@@ -10,7 +12,7 @@
         <div class="home-hero-glow"></div>
 
         <div class="home-hero-content">
-            <span class="home-kicker">Pinterest-inspired book discovery</span>
+            <span class="home-kicker">Canva-style book mood boards</span>
 
             <h1>Build reading boards that feel like you.</h1>
 
@@ -19,9 +21,9 @@
             </p>
 
             <form method="get" asp-page="/Discover" class="home-vibe-search">
-                <input 
-                    type="text" 
-                    name="query" 
+                <input
+                    type="text"
+                    name="query"
                     placeholder="Search a vibe: cozy winter, religious awakening, summer reads..." />
 
                 <button type="submit">Find My Vibe</button>
@@ -38,16 +40,17 @@
             </div>
         </div>
 
-        <div class="home-collage-preview">
-            <div class="home-tile tile-image-like">🌙</div>
-            <div class="home-tile tile-quote">“Light after confusion”</div>
-            <div class="home-tile tile-image-like">✨</div>
-            <div class="home-tile tile-soft">spiritual</div>
-            <div class="home-tile tile-title">Religious Awakening</div>
-            <div class="home-tile tile-dark">🕯️</div>
-            <div class="home-tile tile-warm">healing</div>
-            <div class="home-tile tile-quote">books for becoming</div>
-            <div class="home-tile tile-image-like">📖</div>
+        <div class="home-hero-board">
+            @if (Model.HeroBoard != null)
+            {
+                <partial name="_BoardAestheticCard" model="Model.HeroBoard" />
+            }
+            else
+            {
+                <div class="aesthetic-board-card is-collage-card home-sample-card">
+                    <partial name="_CanvaCollage" model="Model.SampleCollage" />
+                </div>
+            }
         </div>
     </section>
 
@@ -91,49 +94,37 @@
 
     <section class="home-board-preview-section">
         <div class="section-heading text-center">
-            <h2>What your boards can become</h2>
-            <p>Not just lists of books — visual worlds made from moods, symbols, quotes, and stories.</p>
+            <h2>Boards from the community</h2>
+            <p>Real 3×3 canvases — title and owner in the center, photos, quotes, and palette tiles around them.</p>
         </div>
 
-        <div class="home-board-preview-grid">
-            <a asp-page="/Discover" asp-route-mood="spiritual" class="home-aesthetic-board board-spiritual">
-                <div class="mini-collage">
-                    <span>🌙</span>
-                    <span>✨</span>
-                    <span>🕯️</span>
-                    <span>faith</span>
-                    <span>light</span>
-                    <span>📖</span>
-                </div>
-                <h3>Religious Awakening</h3>
-                <p>spiritual • healing • reflective</p>
-            </a>
+        @if (Model.FeaturedBoards.Count > 0)
+        {
+            <div class="home-featured-grid">
+                @foreach (var board in Model.FeaturedBoards)
+                {
+                    <partial name="_BoardAestheticCard" model="board" />
+                }
+            </div>
+        }
+        else if (Model.HeroBoard != null)
+        {
+            <p class="home-featured-empty">
+                This is the first public board on BookBoard.
+                <a asp-page="/CreateBoard">Create another</a> to grow the gallery.
+            </p>
+        }
+        else
+        {
+            <p class="home-featured-empty">
+                No public boards yet.
+                <a asp-page="/CreateBoard">Create the first mood board</a>
+                or <a asp-page="/Discover">browse Discover</a> once others share theirs.
+            </p>
+        }
 
-            <a asp-page="/Discover" asp-route-mood="summer" class="home-aesthetic-board board-summer">
-                <div class="mini-collage">
-                    <span>☀️</span>
-                    <span>🌿</span>
-                    <span>🌼</span>
-                    <span>warm</span>
-                    <span>soft</span>
-                    <span>🍋</span>
-                </div>
-                <h3>Summer Reads</h3>
-                <p>warm • nostalgic • light</p>
-            </a>
-
-            <a asp-page="/Discover" asp-route-mood="dark academia" class="home-aesthetic-board board-academia">
-                <div class="mini-collage">
-                    <span>📚</span>
-                    <span>🕯️</span>
-                    <span>🖋️</span>
-                    <span>rain</span>
-                    <span>mystery</span>
-                    <span>☕</span>
-                </div>
-                <h3>Dark Academia</h3>
-                <p>gloomy • clever • classic</p>
-            </a>
+        <div class="home-featured-more">
+            <a asp-page="/Discover" class="btn btn-outline-secondary">See all public boards</a>
         </div>
     </section>
 
