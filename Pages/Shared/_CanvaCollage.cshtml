@@ -1,0 +1,61 @@
+@model BookBoard.Services.CanvaCollageModel
+@{
+    var slots = new[] { "a", "b", "c", "d", "e", "f", "g", "h" };
+
+    string Truncate(string text, int max)
+    {
+        if (string.IsNullOrWhiteSpace(text) || text.Length <= max)
+        {
+            return text;
+        }
+
+        return text.Substring(0, max).TrimEnd() + "…";
+    }
+}
+
+<div class="mini-collage-grid">
+    @for (int i = 0; i < BookBoard.Services.BoardCollageComposer.SurroundingSlotCount; i++)
+    {
+        var tile = i < Model.Tiles.Count
+            ? Model.Tiles[i]
+            : new BookBoard.Services.CollageTile();
+        string slot = slots[i];
+
+        if (tile.Type == "image")
+        {
+            <div class="cover-tile collage-slot-@slot">
+                <img src="@BookBoard.Services.ImageProxyHelper.BuildUrl(tile.Content)" alt="" />
+            </div>
+        }
+        else if (tile.Type == "bookcover")
+        {
+            <div class="cover-tile cover-tile-bookcover collage-slot-@slot">
+                <img src="@tile.Content" alt="Book cover" />
+            </div>
+        }
+        else if (tile.Type == "text")
+        {
+            <div class="cover-tile collage-slot-@slot">
+                <div class="cover-tile-text">@Truncate(tile.Content, 42)</div>
+            </div>
+        }
+        else if (tile.Type == "icon")
+        {
+            <div class="cover-tile collage-slot-@slot">
+                <div class="cover-tile-icon">@tile.Content</div>
+            </div>
+        }
+        else
+        {
+            <div class="cover-tile collage-slot-@slot">
+                <div class="cover-tile-color" style="background-color: @tile.Content;"></div>
+            </div>
+        }
+    }
+
+    <div class="collage-title-tile @Model.AccentClass collage-slot-title">
+        <span class="collage-title-kicker">@Model.Kicker</span>
+        <span class="collage-title-name">@Truncate(Model.Title, 28)</span>
+        <span class="collage-title-owner">@Truncate(Model.Owner, 22)</span>
+    </div>
+</div>

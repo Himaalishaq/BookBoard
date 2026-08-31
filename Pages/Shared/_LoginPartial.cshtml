@@ -5,9 +5,14 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
+    var currentUser = await UserManager.GetUserAsync(User);
+    var helloName = !string.IsNullOrWhiteSpace(currentUser?.DisplayName)
+        ? currentUser.DisplayName
+        : User.Identity?.Name;
+
     <li class="nav-item">
         <span class="nav-link hello-user">
-            Hi, @User.Identity?.Name
+            Hi, @helloName
         </span>
     </li>
 

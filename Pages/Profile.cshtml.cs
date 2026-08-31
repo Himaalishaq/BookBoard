@@ -60,6 +60,7 @@ namespace BookBoard.Pages
             UserBoards = await _context.Boards
                 .Include(board => board.Books)
                 .Include(board => board.VisualItems)
+                .Include(board => board.User)
                 .Where(board => board.UserId == userId)
                 .OrderByDescending(board => board.CreatedAt)
                 .ToListAsync();
@@ -69,6 +70,8 @@ namespace BookBoard.Pages
                     .ThenInclude(board => board!.Books)
                 .Include(saved => saved.Board)
                     .ThenInclude(board => board!.VisualItems)
+                .Include(saved => saved.Board)
+                    .ThenInclude(board => board!.User)
                 .Where(saved => saved.UserId == userId && saved.Board != null)
                 .OrderByDescending(saved => saved.SavedAt)
                 .ToListAsync();
